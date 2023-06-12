@@ -1,7 +1,15 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:thesis_project/presentation/screens/dashboard.dart';
 
 void main() {
+  mConfigureFlutter();
   runApp(const MyApp());
+}
+
+void mConfigureFlutter() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 }
 
 class MyApp extends StatelessWidget {
@@ -13,10 +21,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Thesis Project',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
+        // brightness: Brightness.dark
       ),
+      home: const DashboardScreen(),
     );
+    
   }
 }
 
+// google api key: AIzaSyAo215TRl_Nkdp1t0m48C6rda_c9vRD_E4
