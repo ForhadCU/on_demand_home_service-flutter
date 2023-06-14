@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:thesis_project/presentation/mock%20ui/google_map.dart';
 import 'package:thesis_project/presentation/screens/dashboard.dart';
 
 void main() {
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         // brightness: Brightness.dark
       ),
-      home: const DashboardScreen(),
+      home: const GoogleMapScreen(),
     );
     
   }

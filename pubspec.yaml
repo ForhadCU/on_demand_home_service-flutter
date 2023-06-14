@@ -29,14 +29,21 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   cupertino_icons: ^1.0.2
+  dartz: ^0.10.1
+  fab_circular_menu: ^1.0.2
   firebase_auth: ^4.6.2
   firebase_core: ^2.13.1
+  flip_card: ^0.7.0
   flutter:
     sdk: flutter
   flutter_polyline_points: ^1.0.0
+  flutter_rating_stars: ^1.0.3+4
   google_maps_flutter: ^2.3.0
+  intl: ^0.18.1
   location: ^4.4.0
   logger: ^1.4.0
+  lottie: ^2.4.0
+  # fab_circular_menu: ^1.0.0
 
 dev_dependencies:
   flutter_lints: ^2.0.0
