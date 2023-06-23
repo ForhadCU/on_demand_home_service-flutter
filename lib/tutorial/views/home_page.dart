@@ -44,9 +44,9 @@ class _HomePageState extends ConsumerState<HomePage> {
   Set<Marker> _markers = <Marker>{};
   Set<Marker> _markersDupe = <Marker>{};
 
-  // Set<Polyline> _polylines = Set<Polyline>();
+  Set<Polyline> _polylines = Set<Polyline>();
   int markerIdCounter = 1;
-  // int polylineIdCounter = 1;
+  int polylineIdCounter = 1;
 
   // var radiusValue = 3000.0;
 
@@ -75,8 +75,8 @@ class _HomePageState extends ConsumerState<HomePage> {
 
 //Text Editing Controllers
   TextEditingController searchController = TextEditingController();
-  // TextEditingController _originController = TextEditingController();
-  // TextEditingController _destinationController = TextEditingController();
+  TextEditingController _originController = TextEditingController();
+  TextEditingController _destinationController = TextEditingController();
 
 //Initial map position on load
   static final CameraPosition _kGooglePlex = CameraPosition(
@@ -99,7 +99,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     });
   }
 
-/*   void _setPolyline(List<PointLatLng> points) {
+  void _setPolyline(List<PointLatLng> points) {
     final String polylineIdVal = 'polyline_$polylineIdCounter';
 
     polylineIdCounter++;
@@ -110,7 +110,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         color: Colors.blue,
         points: points.map((e) => LatLng(e.latitude, e.longitude)).toList()));
   }
- */
+
 /*   void _setCircle(LatLng point) async {
     final GoogleMapController controller = await _controller.future;
 
@@ -232,7 +232,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   child: GoogleMap(
                     mapType: MapType.normal,
                     markers: _markers,
-                    // polylines: _polylines,
+                    polylines: _polylines,
                     // circles: _circles,
                     initialCameraPosition: _kGooglePlex,
                     onMapCreated: (GoogleMapController controller) {
@@ -316,7 +316,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                               ),
                             ))
                     : Container(),
-                /* getDirections
+                getDirections
                     ? Padding(
                         padding: EdgeInsets.fromLTRB(15.0, 40.0, 15.0, 5),
                         child: Column(children: [
@@ -363,7 +363,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                             _destinationController
                                                                 .text);
                                                 _markers = {};
-                                                // _polylines = {};
+                                                _polylines = {};
                                                 gotoPlace(
                                                     directions['start_location']
                                                         ['lat'],
@@ -397,7 +397,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           )
                         ]),
                       )
-                    : Container(), */
+                    : Container(),
                 /*   radiusSlider
                     ? Padding(
                         padding: EdgeInsets.fromLTRB(15.0, 30.0, 15.0, 0.0),
@@ -1129,7 +1129,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     _setMarker(LatLng(lat, lng));
   }
 
-// e: ok
   Widget buildListItem(AutoCompleteResult placeItem, searchFlag) {
     return Padding(
       padding: EdgeInsets.all(5.0),

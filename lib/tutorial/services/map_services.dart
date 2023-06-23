@@ -42,7 +42,7 @@ class MapServices {
     return results;
   }
 
-/*   Future<Map<String, dynamic>> getDirections(
+  Future<Map<String, dynamic>> getDirections(
       String origin, String destination) async {
     final String url =
         'https://maps.googleapis.com/maps/api/directions/json?origin=$origin&destination=$destination&key=$key';
@@ -62,7 +62,7 @@ class MapServices {
     };
 
     return results;
-  } */
+  }
 
 /*   Future<dynamic> getPlaceDetails(LatLng coords, int radius) async {
     var lat = coords.latitude;
