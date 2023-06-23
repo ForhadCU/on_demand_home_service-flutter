@@ -2,7 +2,6 @@
 
 import 'dart:async';
 
-
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/foundation.dart';
@@ -12,7 +11,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import 'package:logger/logger.dart';
 
 import 'dart:ui' as ui;
 
@@ -28,8 +27,8 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-
   Completer<GoogleMapController> _controller = Completer();
+  Logger _logger = Logger();
 
 //Debounce to throttle async calls during search
   Timer? _debounce;
@@ -43,7 +42,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
 //Markers set
   Set<Marker> _markers = <Marker>{};
- Set<Marker> _markersDupe = <Marker>{};
+  Set<Marker> _markersDupe = <Marker>{};
 
   // Set<Polyline> _polylines = Set<Polyline>();
   int markerIdCounter = 1;
@@ -82,7 +81,8 @@ class _HomePageState extends ConsumerState<HomePage> {
 //Initial map position on load
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
+    // zoom: 14.4746,
+    zoom: 16,
   );
 
   void _setMarker(point) {
@@ -130,7 +130,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     });
   } */
 
- /*  _setNearMarker(LatLng point, String label, List types, String status) async {
+  /*  _setNearMarker(LatLng point, String label, List types, String status) async {
     var counter = markerIdCounter++;
 
     final Uint8List markerIcon;
@@ -254,49 +254,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                               borderRadius: BorderRadius.circular(10.0),
                               color: Colors.white,
                             ),
-                            child: TextFormField(
-                              controller: searchController,
-                              decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.symmetric(
-                                      horizontal: 20.0, vertical: 15.0),
-                                  border: InputBorder.none,
-                                  hintText: 'Search',
-                                  suffixIcon: IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          searchToggle = false;
-
-                                          searchController.text = '';
-                                          _markers = {};
-                                          if (searchFlag.searchToggle) {
-                                            searchFlag.toggleSearch();
-                                          }
-                                        });
-                                    },
-                                      icon: Icon(Icons.close))),
-                              onChanged: (value) {
-                                if (_debounce?.isActive ?? false) {
-                                  _debounce?.cancel();
-                                }
-                                _debounce = Timer(Duration(milliseconds: 700),
-                                    () async {
-                                  if (value.length > 2) {
-                                    if (!searchFlag.searchToggle) {
-                                      searchFlag.toggleSearch();
-                                      _markers = {};
-                                    }
-
-                                    List<AutoCompleteResult> searchResults =
-                                        await MapServices().searchPlaces(value);
-
-                                    allSearchResults.setResults(searchResults);
-                                  } else {
-                                    List<AutoCompleteResult> emptyList = [];
-                                    allSearchResults.setResults(emptyList);
-                                  }
-                                });
-                              },
-                            ),
+                            child: _vSearchInput(searchFlag, allSearchResults),
                           )
                         ]),
                       )
@@ -347,7 +305,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         child: Text(
                                           'Close this',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: Colors.black45,
                                               fontFamily: 'WorkSans',
                                               fontWeight: FontWeight.w300),
                                         ),
@@ -440,7 +398,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         ]),
                       )
                     : Container(), */
-              /*   radiusSlider
+                /*   radiusSlider
                     ? Padding(
                         padding: EdgeInsets.fromLTRB(15.0, 30.0, 15.0, 0.0),
                         child: Container(
@@ -563,7 +521,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         ),
                       )
                     : Container(), */
-              /*   pressedNear
+                /*   pressedNear
                     ? Positioned(
                         bottom: 20.0,
                         child: Container(
@@ -577,7 +535,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                               }),
                         ))
                     : Container(), */
-               /*  cardTapped
+                /*  cardTapped
                     ? Positioned(
                         top: 100.0,
                         left: 15.0,
@@ -778,33 +736,13 @@ class _HomePageState extends ConsumerState<HomePage> {
           ringColor: Colors.blue.shade50,
           fabSize: 60.0,
           children: [
-            IconButton(
-                onPressed: () {
-                  setState(() {
-                    searchToggle = true;
-                    radiusSlider = false;
-                    pressedNear = false;
-                    cardTapped = false;
-                    getDirections = false;
-                  });
-                },
-                icon: Icon(Icons.search)),
-            IconButton(
-                onPressed: () {
-                  setState(() {
-                    searchToggle = false;
-                    radiusSlider = false;
-                    pressedNear = false;
-                    cardTapped = false;
-                    getDirections = true;
-                  });
-                },
-                icon: Icon(Icons.navigation))
+            _vSearchIconBtn(),
+            _vNavigationIconBtn(),
           ]),
     );
   }
 
- /*  _buildReviewItem(review) {
+  /*  _buildReviewItem(review) {
     return Column(
       children: [
         Padding(
@@ -877,7 +815,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   } */
 
- /*  _buildPhotoGallery(photoElement) {
+  /*  _buildPhotoGallery(photoElement) {
     if (photoElement == null || photoElement.length == 0) {
       showBlankCard = true;
       return Container(
@@ -1160,7 +1098,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   } */
 
- /*  Future<void> goToTappedPlace() async {
+  /*  Future<void> goToTappedPlace() async {
     final GoogleMapController controller = await _controller.future;
 
     _markers = {};
@@ -1200,7 +1138,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           FocusManager.instance.primaryFocus?.unfocus();
         },
         onTap: () async {
-          var place = await MapServices().getPlace(placeItem.placeId);
+          var place = await MapServices().getPlaceById(placeItem.placeId);
           gotoSearchedPlace(place['geometry']['location']['lat'],
               place['geometry']['location']['lng']);
           searchFlag.toggleSearch();
@@ -1221,6 +1159,85 @@ class _HomePageState extends ConsumerState<HomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  _vSearchIconBtn() {
+    return IconButton(
+        onPressed: () {
+          setState(() {
+            searchToggle = true;
+            radiusSlider = false;
+            pressedNear = false;
+            cardTapped = false;
+            getDirections = false;
+          });
+        },
+        icon: Icon(Icons.search));
+  }
+
+  _vNavigationIconBtn() {
+    return IconButton(
+        onPressed: () {
+          setState(() {
+            searchToggle = false;
+            radiusSlider = false;
+            pressedNear = false;
+            cardTapped = false;
+            getDirections = true;
+          });
+        },
+        icon: Icon(Icons.navigation));
+  }
+
+  vCloseBtn() {
+    return;
+  }
+
+  _vSearchInput(SearchToggle searchFlag, PlaceResults allSearchResults) {
+    return TextFormField(
+      autofocus: true,
+      controller: searchController,
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+        border: InputBorder.none,
+        hintText: 'Search',
+        suffixIcon: IconButton(
+            onPressed: () {
+              setState(() {
+                searchToggle = false;
+
+                searchController.text = '';
+                _markers = {};
+                if (searchFlag.searchToggle) {
+                  searchFlag.toggleSearch();
+                }
+              });
+            },
+            icon: Icon(Icons.close)),
+      ),
+      onChanged: (value) {
+        _logger.w(_debounce?.isActive ?? false);
+        if (_debounce?.isActive ?? false) {
+          _debounce?.cancel();
+        }
+        _debounce = Timer(Duration(milliseconds: 700), () async {
+          if (value.length > 2) {
+            if (!searchFlag.searchToggle) {
+              searchFlag.toggleSearch();
+              _markers = {};
+            }
+
+            List<AutoCompleteResult> searchResults =
+                await MapServices().searchPlacesByName(value);
+
+            allSearchResults.setResults(searchResults);
+          } else {
+            List<AutoCompleteResult> emptyList = [];
+            allSearchResults.setResults(emptyList);
+          }
+        });
+      },
     );
   }
 }

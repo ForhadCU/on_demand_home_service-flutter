@@ -13,7 +13,8 @@ class MapServices {
   final String types = 'geocode';
   Logger _logger = Logger();
 
-  Future<List<AutoCompleteResult>> searchPlaces(String searchInput) async {
+  Future<List<AutoCompleteResult>> searchPlacesByName(
+      String searchInput) async {
     final String url =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$searchInput&types=$types&key=$key';
 
@@ -21,16 +22,16 @@ class MapServices {
 
     var json = convert.jsonDecode(response.body);
 
-    _logger.d("Search Places Json Res: $json");
+    // _logger.d("Search Places Json Res: $json");
 
     var results = json['predictions'] as List;
 
     return results.map((e) => AutoCompleteResult.fromJson(e)).toList();
   }
 
-  Future<Map<String, dynamic>> getPlace(String? input) async {
+  Future<Map<String, dynamic>> getPlaceById(String? placeId) async {
     final String url =
-        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$input&key=$key';
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$key';
 
     var response = await http.get(Uri.parse(url));
 
