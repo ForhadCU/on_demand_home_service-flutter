@@ -2,6 +2,11 @@
     package="com.example.thesis_project">
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Include only if your app benefits from precise location access -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    
     <application
         android:label="thesis_project"
         android:name="${applicationName}"

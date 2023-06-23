@@ -1,11 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:thesis_project/presentation/mock%20ui/google_map.dart';
-import 'package:thesis_project/presentation/screens/dashboard.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:thesis_project/tutorial/views/home_page.dart';
 
 void main() {
   mConfigureFlutter();
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 void mConfigureFlutter() async {
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         // brightness: Brightness.dark
       ),
-      home: const GoogleMapScreen(),
+      home: const HomePage(),
     );
     
   }
