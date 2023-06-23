@@ -50,7 +50,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   var radiusValue = 3000.0;
 
-  // var tappedPoint;
+  var tappedPoint;
 
   // List allFavoritePlaces = [];
 
@@ -239,7 +239,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       _controller.complete(controller);
                     },
                     onTap: (point) {
-                      // tappedPoint = point;
+                      tappedPoint = point;
                       _setCircle(point);
                     },
                   ),
@@ -398,7 +398,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         ]),
                       )
                     : Container(),
-                /*   radiusSlider
+                  radiusSlider
                     ? Padding(
                         padding: EdgeInsets.fromLTRB(15.0, 30.0, 15.0, 0.0),
                         child: Container(
@@ -416,7 +416,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         pressedNear = false;
                                         _setCircle(tappedPoint);
                                       })),
-                              !pressedNear
+                              /* !pressedNear
                                   ? IconButton(
                                       onPressed: () {
                                         if (_debounce?.isActive ?? false) {
@@ -515,12 +515,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       allFavoritePlaces = [];
                                     });
                                   },
-                                  icon: Icon(Icons.close, color: Colors.red))
+                                  icon: Icon(Icons.close, color: Colors.red)) */
                             ],
                           ),
                         ),
                       )
-                    : Container(), */
+                    : Container(),
                 /*   pressedNear
                     ? Positioned(
                         bottom: 20.0,
