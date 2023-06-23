@@ -48,7 +48,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   int markerIdCounter = 1;
   int polylineIdCounter = 1;
 
-  // var radiusValue = 3000.0;
+  var radiusValue = 3000.0;
 
   // var tappedPoint;
 
@@ -71,7 +71,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   // var selectedPlaceDetails;
 
 //Circle
-  // Set<Circle> _circles = Set<Circle>();
+  Set<Circle> _circles = Set<Circle>();
 
 //Text Editing Controllers
   TextEditingController searchController = TextEditingController();
@@ -111,7 +111,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         points: points.map((e) => LatLng(e.latitude, e.longitude)).toList()));
   }
 
-/*   void _setCircle(LatLng point) async {
+  void _setCircle(LatLng point) async {
     final GoogleMapController controller = await _controller.future;
 
     controller.animateCamera(CameraUpdate.newCameraPosition(
@@ -128,7 +128,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       searchToggle = false;
       radiusSlider = true;
     });
-  } */
+  }
 
   /*  _setNearMarker(LatLng point, String label, List types, String status) async {
     var counter = markerIdCounter++;
@@ -233,14 +233,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                     mapType: MapType.normal,
                     markers: _markers,
                     polylines: _polylines,
-                    // circles: _circles,
+                    circles: _circles,
                     initialCameraPosition: _kGooglePlex,
                     onMapCreated: (GoogleMapController controller) {
                       _controller.complete(controller);
                     },
                     onTap: (point) {
                       // tappedPoint = point;
-                      // _setCircle(point);
+                      _setCircle(point);
                     },
                   ),
                 ),
