@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thesis_project/tutorial/views/home_page.dart';
+import 'package:thesis_project/views/screens/signUp/signup.dart';
 
 void main() {
   mConfigureFlutter();
@@ -20,13 +21,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Thesis Project',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
         // brightness: Brightness.dark
       ),
-      home: const HomePage(),
+      // home: const HomePage(),
+      home: const SignUpScreen(),
     );
     
   }

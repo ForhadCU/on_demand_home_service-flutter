@@ -1,51 +1,66 @@
 // ignore_for_file: constant_identifier_names
 
-class MyKeywords {
-  // m: For Firebase
-  // User
-  static const String USER = "USER";
-  static const String email = "email";
-  static const String uid = "uid";
-  static const String username = "username";
-  static const String phone = "phone";
-  static const String first_name = "first_name";
-  static const String last_name = "last_name";
-  static const String location = "location";
-  static const String dob = "dob";
-  static const String img_uri = "img_uri";
-  static const String ts = "ts";
+// m: For Firebase
+// User
+const String USER = "USER";
+const String email = "email";
+const String uid = "uid";
+const String username = "username";
+const String phone = "phone";
+const String first_name = "first_name";
+const String last_name = "last_name";
+const String location = "location";
+const String dob = "dob";
+const String img_uri = "img_uri";
+const String ts = "ts";
 
-  // Post
-  static const String POST = "POST";
-  static const String LIKER = "LIKER";
-  static const String DISLIKER = "DISLIKER";
-  static const String COMMENTER = "COMMENTER";
-  static const String RATER = "RATER";
-  static const String post_id = "post_id";
-  static const String caption = "caption";
-  static const String num_of_likes = "num_of_likes";
-  static const String num_of_dislikes = "num_of_dislikes";
-  static const String num_of_comments = "num_of_comments";
-  static const String category = "category";
-  static const String comment_id = "comment_id";
-  static const String text = "text";
-  static const String all_cat = "all category";
-  static const String drawing = "0 drawings";
-  static const String engraving = "1 engraving";
-  static const String iconography = "2 iconography";
-  static const String painting = "3 painting";
-  static const String sculpture = "4 sculpture";
-  static const String liker = "liker";
-  static const String disliker = "disliker";
-  static const String commenter = "commenter";
-  static const String users = "users";
-  static const String totalRatingValue = "total_rating_value";
-  static const String ratings = "ratings";
-  static const String ratingValue = "ratingValue";
-  static const String numOfRatings = "num_of_ratings";
-  
+// Post
+const String POST = "POST";
+const String LIKER = "LIKER";
+const String DISLIKER = "DISLIKER";
+const String COMMENTER = "COMMENTER";
+const String RATER = "RATER";
+const String post_id = "post_id";
+const String caption = "caption";
+const String num_of_likes = "num_of_likes";
+const String num_of_dislikes = "num_of_dislikes";
+const String num_of_comments = "num_of_comments";
+const String category = "category";
+const String comment_id = "comment_id";
+const String text = "text";
+const String all_cat = "all category";
+const String drawing = "0 drawings";
+const String engraving = "1 engraving";
+const String iconography = "2 iconography";
+const String painting = "3 painting";
+const String sculpture = "4 sculpture";
+const String liker = "liker";
+const String disliker = "disliker";
+const String commenter = "commenter";
+const String users = "users";
+const String totalRatingValue = "total_rating_value";
+const String ratings = "ratings";
+const String ratingValue = "ratingValue";
+const String numOfRatings = "num_of_ratings";
 
-  // m: For Sharedpreparance
-  static const String singleImgUrls = "singleImgUrls";
-  static const String sessionStatus = "sessionStatus";
-}
+// m: For Sharedpreparance
+const String singleImgUrls = "singleImgUrls";
+const String sessionStatus = "sessionStatus";
+
+const String fontBebasNue = "BebasNeue";
+const String fontOswald = "Oswald";
+const String userType = "userType";
+
+// c: Service Category
+const String acRepair = "AcRepair";
+const String paintings = "Painting";
+const String electronics = "Electronic";
+const String cleaning = "Cleaning";
+const String beauty = "Beauty";
+const String appliance = "Appliance";
+const String plumbing = "Plumbing";
+const String shifting = "Shifting";
+const String barber = "Barber";
+const String tutor = "Tutor";
+
+
