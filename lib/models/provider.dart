@@ -5,10 +5,11 @@ class ServiceProvider {
   String? usertype;
   double? lat;
   double? long;
-  int? rating;
+  double? rating;
   int? serviceFee;
   String? imgUri;
   int? numOfReview;
+  String? location;
 
   ServiceProvider({
     this.id,
@@ -21,6 +22,7 @@ class ServiceProvider {
     this.serviceFee,
     this.imgUri,
     this.numOfReview,
+    this.location,
   });
 
   ServiceProvider.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class ServiceProvider {
     serviceFee = json['serviceFee'];
     imgUri = json['imgUri'];
     numOfReview = json['numOfReview'];
+    location = json['location'];
   }
 
   Map<String, dynamic> toJson() {
@@ -48,6 +51,7 @@ class ServiceProvider {
     data['serviceFee'] = serviceFee;
     data['imgUri'] = imgUri;
     data['numOfReview'] = numOfReview;
+    data['location'] = location;
     return data;
   }
 }

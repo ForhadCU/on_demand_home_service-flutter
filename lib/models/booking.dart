@@ -4,7 +4,8 @@ class Booking {
   String? _serviceCategory;
   String? _providerImgUrl;
   String? _schedule;
-  String? _serviceFee;
+  int? _serviceFee;
+  bool? _status;
 
   Booking(
       {String? providerId,
@@ -12,7 +13,8 @@ class Booking {
       String? serviceCategory,
       String? providerImgUrl,
       String? schedule,
-      String? serviceFee}) {
+      int? serviceFee,
+      bool? status}) {
     if (providerId != null) {
       _providerId = providerId;
     }
@@ -31,6 +33,9 @@ class Booking {
     if (serviceFee != null) {
       _serviceFee = serviceFee;
     }
+    if (status != null) {
+      _status = status;
+    }
   }
 
   String? get providerId => _providerId;
@@ -45,8 +50,10 @@ class Booking {
       _providerImgUrl = providerImgUrl;
   String? get schedule => _schedule;
   set schedule(String? schedule) => _schedule = schedule;
-  String? get serviceFee => _serviceFee;
-  set serviceFee(String? serviceFee) => _serviceFee = serviceFee;
+  int? get serviceFee => _serviceFee;
+  set serviceFee(int? serviceFee) => _serviceFee = serviceFee;
+  bool? get status => _status;
+  set status(bool? status) => _status = status;
 
   Booking.fromJson(Map<String, dynamic> json) {
     _providerId = json['providerId'];
@@ -55,6 +62,7 @@ class Booking {
     _providerImgUrl = json['providerImgUrl'];
     _schedule = json['schedule'];
     _serviceFee = json['serviceFee'];
+    _status = json['status'];
   }
 
   Map<String, dynamic> toJson() {
@@ -65,6 +73,7 @@ class Booking {
     data['providerImgUrl'] = _providerImgUrl;
     data['schedule'] = _schedule;
     data['serviceFee'] = _serviceFee;
+    data['status'] = _status;
     return data;
   }
 }

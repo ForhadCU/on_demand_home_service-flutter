@@ -7,12 +7,16 @@ import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/const/keywords.dart';
 import 'package:thesis_project/models/provider.dart';
 import 'package:thesis_project/models/servie_category.dart';
+import 'package:thesis_project/utils/currency_format.dart';
 import 'package:thesis_project/utils/custom_text.dart';
 import 'package:thesis_project/utils/my_colors.dart';
 import 'package:thesis_project/utils/my_screensize.dart';
 import 'package:thesis_project/utils/statusbar.dart';
+import 'package:thesis_project/view_models/vm_home.dart';
+import 'package:thesis_project/views/screens/findProvider/find_provider.dart';
 import 'package:thesis_project/views/screens/home/widgets/bottom_nav.dart';
 
+import '../../../models/booking.dart';
 import '../../../models/food.dart';
 import '../settings/settings.dart';
 
@@ -24,6 +28,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  
   String _userName = "Mrs. Kaberi Jaman";
   String _userAddress = "Jobra, Chittagong";
   FocusNode? _focusNode;
@@ -46,7 +51,17 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
           backgroundColor: MyColors.caribbeanGreenTint7,
           floatingActionButton: FloatingActionButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return FindProviderScreen(
+                  serviceCategory: cleaning,
+                  category: '',
+                  myLatitude: 0,
+                  myLongitude: 0,
+                  searchRange: 0,
+                );
+              }));
+            },
             shape: CircleBorder(),
             backgroundColor: MyColors.spaceCadetTint1,
             child: Icon(
@@ -76,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _vHome() {
     return Container(
-      padding: EdgeInsets.only(left: 18, right: 18, top: 18, bottom: 12),
+      padding: EdgeInsets.only(left: 12, right: 12, top: 18, bottom: 12),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,9 +104,22 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(
               height: 12,
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  "Recent",
+                  style: TextStyle(
+                    color: Colors.black45,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                )
+              ],
+            ),
             _vProductSlider(),
             SizedBox(
-              height: 24,
+              height: 18,
             ),
             /* _vEditTextSearchProvider(),
               SizedBox(
@@ -104,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 2,
             ),
             SizedBox(
-              height: 28,
+              height: 20,
             ),
             _vRecommends(),
           ],
@@ -115,13 +143,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _vProductSlider() {
     return Container(
-      margin: EdgeInsets.only(top: 0, bottom: 5),
+      margin: EdgeInsets.only(top: 4, bottom: 5),
       child: CarouselSlider(
         options: CarouselOptions(
-          height: 140.0,
+          height: 150.0,
           autoPlay: true,
         ),
-        items: _listFood1.map((i) {
+        items: bookingList.map((i) {
           return Builder(
             builder: (BuildContext context) {
               return InkWell(
@@ -131,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       return FoodDescScreen(food: i);
                     })); */
                   },
-                  child: vFoodCard(i));
+                  child: _vBannerItem(i));
             },
           );
         }).toList(),
@@ -139,25 +167,150 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  vFoodCard(Food i) {
+  _vBannerItem(Booking booking) {
     return Container(
       // alignment: Alignment.center,
       clipBehavior: Clip.hardEdge,
       // height: MyScreenSize.mGetHeight(context, 30),
       width: MyScreenSize.mGetWidth(context, 100),
       margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 4),
+      padding: EdgeInsets.all(8),
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.black26,
+            color: Colors.black38,
             offset: Offset(1, 1),
-            blurRadius: 2,
+            blurRadius: 1,
           ),
         ],
-        color: MyColors.caribbeanGreenTint7,
+        color: booking.status! ? MyColors.vividmalachite : Colors.orange,
         borderRadius: BorderRadius.circular(10),
       ),
-      
+
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // v: top
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(90),
+                ),
+                child: Image(
+                  image: AssetImage(
+                    HomeViewModel().mGetServiceCatIcon(
+                            serviceCategory: booking.serviceCategory!) ??
+                        "assets/images/ic_cleaning.png",
+                  ),
+                  width: 28,
+                  height: 28,
+                ),
+              ),
+              SizedBox(
+                width: 12,
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "${booking.serviceCategory!} Service",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 4,
+                  ),
+                  Row(
+                    children: [
+                      // Text("Price: "),
+                      Text(
+                        "${booking.serviceFee} ",
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      Text("Tk/hr"),
+                    ],
+                  )
+                ],
+              )
+            ],
+          ),
+          Divider(
+            height: 14,
+            color: Colors.black12,
+          ),
+          // v: status
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Status"),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black12),
+                    color: booking.status!
+                        ? MyColors.vividmalachite
+                        : Colors.orange,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black12,
+                          offset: Offset(.5, .5),
+                          blurRadius: .5)
+                    ]),
+                child: booking.status!
+                    ? Text(
+                        "Confirmed",
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        "Pending",
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+              )
+            ],
+          ),
+          SizedBox(
+            height: 6,
+          ),
+          // v: schedule
+          Row(
+            children: [
+              Icon(
+                Icons.calendar_month,
+                size: 18,
+                color: Colors.black45,
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    booking.schedule!,
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(
+                    height: 2,
+                  ),
+                  Text(
+                    "Schedule",
+                    style: TextStyle(color: Colors.black45),
+                  )
+                ],
+              )
+            ],
+          )
+        ],
+      ),
     );
   }
 
@@ -175,12 +328,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       // padding: EdgeInsets.all(4),
       height: MyScreenSize.mGetHeight(context, 6),
-      width: MyScreenSize.mGetWidth(context, 16),
+      width: MyScreenSize.mGetWidth(context, 14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        // color: MyColors.caribbeanGreen
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.black12)
+          // color: MyColors.caribbeanGreen
+          ),
+      child: Image(
+        image: AssetImage("assets/images/image 1.png"),
+        fit: BoxFit.fill,
       ),
-      child: Image(image: AssetImage("assets/images/image 1.png")),
     );
   }
 
@@ -256,31 +413,34 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _vTextGreetings() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Good $_greeting!",
-          style: TextStyle(
-            fontFamily: fontOswald,
-            fontSize: 32,
-            color: MyColors.spaceCadetTint4,
-            fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Good $_greeting!",
+            style: TextStyle(
+              fontFamily: fontOswald,
+              fontSize: 28,
+              color: MyColors.spaceCadetTint4,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        SizedBox(
-          height: 4,
-        ),
-        Text(
-          "What you are looking for today.",
-          style: TextStyle(
-            fontFamily: fontOswald,
-            fontSize: 24,
-            color: MyColors.spaceCadetTint4,
-            fontWeight: FontWeight.bold,
+          /* SizedBox(
+            height: 2,
+          ), */
+          Text(
+            "What you are looking for today.",
+            style: TextStyle(
+              fontFamily: fontOswald,
+              fontSize: 18,
+              color: MyColors.spaceCadetTint4,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -358,7 +518,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _mInitiate() {
     _focusNode = FocusNode();
 
-    for (var i = 1; i < 11; i++) {
+    for (var i = 1; i < 4; i++) {
       _listFood1.add(Food.bannarConstructor(
           name: "My Food $i",
           desc: dummyFoodDesc,
