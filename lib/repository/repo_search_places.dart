@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/auto_complete_result.dart';
 
+
+
 final placeResultsProvider = ChangeNotifierProvider<PlaceResults>((ref) 
 {
   return PlaceResults();

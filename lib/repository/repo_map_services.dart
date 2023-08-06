@@ -1,12 +1,13 @@
+import 'dart:convert' as convert;
+
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:thesis_project/utils/constants.dart';
-import 'dart:convert' as convert;
 
 import '../models/auto_complete_result.dart';
+
 
 class MapServices {
   final String key = MyConstants.googleApiKey;
@@ -64,7 +65,7 @@ class MapServices {
     return results;
   }
 
-/*   Future<dynamic> getPlaceDetails(LatLng coords, int radius) async {
+  Future<dynamic> getPlaceDetails(LatLng coords, int radius) async {
     var lat = coords.latitude;
     var lng = coords.longitude;
 
@@ -87,5 +88,5 @@ class MapServices {
     var json = convert.jsonDecode(response.body);
 
     return json;
-  } */
+  }
 }

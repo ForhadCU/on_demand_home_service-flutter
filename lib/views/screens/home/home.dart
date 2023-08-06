@@ -3,6 +3,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/const/keywords.dart';
 import 'package:thesis_project/models/provider.dart';
@@ -17,6 +18,7 @@ import 'package:thesis_project/views/screens/findProvider/find_provider.dart';
 import 'package:thesis_project/views/screens/home/widgets/bottom_nav.dart';
 
 import '../../../models/booking.dart';
+import '../../../models/current_location_details.dart';
 import '../../../models/food.dart';
 import '../settings/settings.dart';
 
@@ -28,7 +30,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  
   String _userName = "Mrs. Kaberi Jaman";
   String _userAddress = "Jobra, Chittagong";
   FocusNode? _focusNode;
@@ -36,31 +37,27 @@ class _HomeScreenState extends State<HomeScreen> {
   late String _greeting;
   int _pageIndex = 0;
   Color _fontColor = MyColors.spaceCadet;
+  final HomeViewModel _homeViewModel = HomeViewModel();
+  late bool _isLocationAccessGranted;
+  late CurrentLocationDetails? _currentLocationDetails;
 
   @override
   void initState() {
     super.initState();
     uCustomStatusBar();
     _mInitiate();
-    _mMakeGreetings();
+    _mManageLocationReq();
+    _mLoadData();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          backgroundColor: MyColors.caribbeanGreenTint7,
+          backgroundColor: MyColors.caribbeanGreenTint7.withOpacity(1),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return FindProviderScreen(
-                  serviceCategory: cleaning,
-                  category: '',
-                  myLatitude: 0,
-                  myLongitude: 0,
-                  searchRange: 0,
-                );
-              }));
+              _mOnClickSearchBtn();
             },
             shape: CircleBorder(),
             backgroundColor: MyColors.spaceCadetTint1,
@@ -91,33 +88,39 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _vHome() {
     return Container(
-      padding: EdgeInsets.only(left: 12, right: 12, top: 18, bottom: 12),
+      padding: EdgeInsets.only(left: 12, right: 12, top: 18, bottom: 0),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _vTopBarPart(),
-            SizedBox(
-              height: 12,
+            Divider(
+              color: Colors.black12,
             ),
-            _vTextGreetings(),
             SizedBox(
               height: 12,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  "Recent",
+                  "Recents",
                   style: TextStyle(
-                    color: Colors.black45,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.bold,
                   ),
-                )
+                ),
+                /* Text(
+              "See All",
+              style:
+                  TextStyle(color: Colors.black54, fontWeight: FontWeight.w400),
+            ), */
               ],
             ),
             _vProductSlider(),
+            SizedBox(
+              height: 12,
+            ),
+            _vTextGreetings(),
             SizedBox(
               height: 18,
             ),
@@ -174,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // height: MyScreenSize.mGetHeight(context, 30),
       width: MyScreenSize.mGetWidth(context, 100),
       margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 4),
-      padding: EdgeInsets.all(8),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -183,7 +186,8 @@ class _HomeScreenState extends State<HomeScreen> {
             blurRadius: 1,
           ),
         ],
-        color: booking.status! ? MyColors.vividmalachite : Colors.orange,
+        // color: booking.status! ? MyColors.vividmalachite : Colors.orange,
+        color: booking.status! ? Colors.white : Colors.white,
         borderRadius: BorderRadius.circular(10),
       ),
 
@@ -249,10 +253,16 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black12),
-                    color: booking.status!
+                    // border: Border.all(color: Colors.black12),
+                    border: Border.all(
+                      color: booking.status!
+                          ? MyColors.vividmalachite
+                          : Colors.orange,
+                    ),
+                    /* color: booking.status!
                         ? MyColors.vividmalachite
-                        : Colors.orange,
+                        : Colors.orange, */
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
@@ -264,13 +274,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? Text(
                         "Confirmed",
                         style: TextStyle(
-                          color: Colors.white,
+                          // color: Colors.white,
+                          color: MyColors.vividmalachite,
                         ),
                       )
                     : Text(
                         "Pending",
                         style: TextStyle(
-                          color: Colors.white,
+                          // color: Colors.white,
+                          color: Colors.orange,
                         ),
                       ),
               )
@@ -414,7 +426,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _vTextGreetings() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -422,7 +434,7 @@ class _HomeScreenState extends State<HomeScreen> {
             "Good $_greeting!",
             style: TextStyle(
               fontFamily: fontOswald,
-              fontSize: 28,
+              fontSize: 24,
               color: MyColors.spaceCadetTint4,
               fontWeight: FontWeight.bold,
             ),
@@ -539,28 +551,34 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _vItem(ServiceCategory serviceCategoryList) {
-    return Container(
-      width: MyScreenSize.mGetWidth(context, 20),
-      margin: EdgeInsets.only(right: 4, left: 4, top: 8, bottom: 8),
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.black12),
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white.withOpacity(.2)),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image(
-            image: AssetImage(serviceCategoryList.iconUri!),
-            width: 48,
-            height: 48,
-            fit: BoxFit.fill,
-          ),
-          SizedBox(
-            height: 6,
-          ),
-          Text(serviceCategoryList.name!)
-        ],
+    return InkWell(
+      onTap: () {
+        _mOnClickCategory();
+      },
+      child: Container(
+        width: MyScreenSize.mGetWidth(context, 20),
+        margin: EdgeInsets.only(right: 4, left: 4, top: 8, bottom: 8),
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.black12),
+            borderRadius: BorderRadius.circular(10),
+            // color: Colors.white.withOpacity(.2)),
+            color: Colors.white),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image(
+              image: AssetImage(serviceCategoryList.iconUri!),
+              width: 48,
+              height: 48,
+              fit: BoxFit.fill,
+            ),
+            SizedBox(
+              height: 6,
+            ),
+            Text(serviceCategoryList.name!)
+          ],
+        ),
       ),
     );
   }
@@ -628,7 +646,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                     // color: Colors.white,
                     border: Border.all(color: Colors.black12),
-                    color: Colors.white.withOpacity(.2),
+                    // color: Colors.white.withOpacity(.2),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(14)),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -730,5 +749,122 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ]),
     );
+  }
+
+  _vShowLocationPermissionDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Location Permission'),
+          content: Text(
+              'Please grant location permission for the app to function properly.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                openAppSettings();
+                Navigator.pop(context);
+              },
+              child: Text('Open Settings'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _mLoadData() async {
+    _greeting = _homeViewModel.mMakeGreetings();
+    //  await _homeViewModel.mGetCurrentPostion();
+    // await _homeViewModel.mCheckLocationPermission();
+  }
+
+  void _mManageLocationReq() async {
+    _currentLocationDetails =
+        await _homeViewModel.mManageLocAccessAndFetchCurrentPos();
+    logger.d(
+        "CurrentLocationDetails: ${_currentLocationDetails!.lat}, ${_currentLocationDetails!.long},${_currentLocationDetails!.formattedAdress}");
+  }
+
+  void _mOnClickCategory() async {
+    // m: This function should be code into Viewmodel
+
+    _isLocationAccessGranted = await _homeViewModel.mCheckLocationPermission();
+    if (_isLocationAccessGranted) {
+      if (_currentLocationDetails == null) {
+        _currentLocationDetails =
+            await _homeViewModel.mManageLocAccessAndFetchCurrentPos();
+        if (_currentLocationDetails == null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(
+              "Something worng, restart your app",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ));
+        } else {
+          // c: navigate to search screen
+          _mGotoSearchScreen();
+          logger.i("Granted now");
+        }
+      } else {
+        // c: navigate to search screen
+        _mGotoSearchScreen();
+        logger.i("Granted now");
+      }
+    } else {
+      _vShowLocationPermissionDialog();
+    }
+  }
+
+  void _mOnClickSearchBtn() async {
+    // m: This function should be code into Viewmodel
+
+    _isLocationAccessGranted = await _homeViewModel.mCheckLocationPermission();
+    if (_isLocationAccessGranted) {
+      if (_currentLocationDetails == null) {
+        _currentLocationDetails =
+            await _homeViewModel.mManageLocAccessAndFetchCurrentPos();
+        if (_currentLocationDetails == null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(
+              "Something worng, restart your app",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ));
+        } else {
+          // c: navigate to search screen
+          _mGotoSearchScreen();
+          logger.i("Granted now");
+        }
+      } else {
+        // c: navigate to search screen
+        _mGotoSearchScreen();
+        logger.i("Granted now");
+      }
+    } else {
+      _vShowLocationPermissionDialog();
+    }
+  }
+
+  void _mGotoSearchScreen() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      return FindProviderScreen(
+        currentLocationDetails: _currentLocationDetails!,
+        serviceCategory: "",
+        searchRange: 5,
+      );
+    }));
   }
 }

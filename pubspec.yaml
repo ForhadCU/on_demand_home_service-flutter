@@ -43,12 +43,15 @@ dependencies:
   flutter_polyline_points: ^1.0.0
   flutter_rating_stars: ^1.0.3+4
   flutter_riverpod: ^2.3.6
+  geocoding: ^2.1.0
+  geolocator: ^9.0.2
   getwidget: ^3.1.1
   google_maps_flutter: ^2.3.0
   intl: ^0.18.1
   location: ^4.4.0
   logger: ^1.4.0
   lottie: ^2.4.0
+  permission_handler: ^10.4.3
 
 dev_dependencies:
   flutter_lints: ^2.0.0
@@ -83,8 +86,8 @@ flutter:
     - family: BebasNeue
       fonts:
         - asset: fonts/BebasNeue-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
+    #       - asset: fonts/Schyler-Italic.ttf
+    #         style: italic
     - family: Oswald
       fonts:
         - asset: fonts/Oswald-Regular.ttf

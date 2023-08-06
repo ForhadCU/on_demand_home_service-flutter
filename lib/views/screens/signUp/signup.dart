@@ -8,6 +8,7 @@ import 'package:logger/logger.dart';
 import 'package:thesis_project/const/keywords.dart';
 import 'package:thesis_project/utils/my_colors.dart';
 import 'package:thesis_project/utils/my_screensize.dart';
+import 'package:thesis_project/utils/statusbar.dart';
 import 'package:thesis_project/views/screens/setLocation/set_location.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -35,6 +36,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String _dropdownvalue = 'Painter';
   bool _isSubmitting = false;
   bool _isProvider = true;
+
+  @override
+  void initState() {
+    super.initState();
+    uCustomStatusBar();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -286,10 +293,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     selectedColor: MyColors.caribbeanGreenTint4,
                     unselectedColor: Colors.black12,
                     border: NeumorphicBorder(
-                      isEnabled: _selectedRadioBtnValue == '0' ? true : false,
-                      color: MyColors.caribbeanGreenTint1,
-                      width: 1
-                    ),
+                        isEnabled: _selectedRadioBtnValue == '0' ? true : false,
+                        color: MyColors.caribbeanGreenTint1,
+                        width: 1),
                   ),
                   groupValue: _selectedRadioBtnValue,
                   value: '0',
@@ -328,10 +334,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     selectedColor: MyColors.caribbeanGreenTint4,
                     unselectedColor: Colors.black12,
                     border: NeumorphicBorder(
-                      isEnabled: _selectedRadioBtnValue == '1' ? true : false,
-                           color: MyColors.caribbeanGreenTint1,
-                      width: 1
-                    ),
+                        isEnabled: _selectedRadioBtnValue == '1' ? true : false,
+                        color: MyColors.caribbeanGreenTint1,
+                        width: 1),
                     boxShape: NeumorphicBoxShape.circle(),
                     unselectedDepth: 4,
                     selectedDepth: 8,

@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
 
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flip_card/flip_card.dart';
@@ -12,21 +13,20 @@ import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
+import 'package:thesis_project/const/constants.dart';
 
-import 'dart:ui' as ui;
+import '../../../models/auto_complete_result.dart';
+import '../../../repository/repo_map_services.dart';
+import '../../../repository/repo_search_places.dart';
 
-import '../models/auto_complete_result.dart';
-import '../providers/search_places.dart';
-import '../services/map_services.dart';
-
-class HomePage extends ConsumerStatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class MapScreen extends ConsumerStatefulWidget {
+  const MapScreen({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _HomePageState extends ConsumerState<MapScreen> {
   Completer<GoogleMapController> _controller = Completer();
   Logger _logger = Logger();
 
@@ -52,23 +52,23 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   var tappedPoint;
 
-  // List allFavoritePlaces = [];
+  List allFavoritePlaces = [];
 
-  // String tokenKey = '';
+  String tokenKey = '';
 
   // //Page controller for the nice pageview
-  // late PageController _pageController;
-  // int prevPage = 0;
-  // var tappedPlaceDetail;
-  // String placeImg = '';
-  // var photoGalleryIndex = 0;
-  // bool showBlankCard = false;
-  // bool isReviews = true;
-  // bool isPhotos = false;
+  late PageController _pageController;
+  int prevPage = 0;
+  var tappedPlaceDetail;
+  String placeImg = '';
+  var photoGalleryIndex = 0;
+  bool showBlankCard = false;
+  bool isReviews = true;
+  bool isPhotos = false;
 
-  // final key = '<yourkeyhere>';
+  final key = '<AIzaSyAo215TRl_Nkdp1t0m48C6rda_c9vRD_E4>';
 
-  // var selectedPlaceDetails;
+  var selectedPlaceDetails;
 
 //Circle
   Set<Circle> _circles = Set<Circle>();
@@ -130,7 +130,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     });
   }
 
-  /*  _setNearMarker(LatLng point, String label, List types, String status) async {
+  _setNearMarker(LatLng point, String label, List types, String status) async {
     var counter = markerIdCounter++;
 
     final Uint8List markerIcon;
@@ -165,9 +165,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     setState(() {
       _markers.add(marker);
     });
-  } */
+  }
 
-/*   Future<Uint8List> getBytesFromAsset(String path, int width) async {
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
     ByteData data = await rootBundle.load(path);
 
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
@@ -177,14 +177,14 @@ class _HomePageState extends ConsumerState<HomePage> {
         .buffer
         .asUint8List();
   }
- */
+
   @override
   void initState() {
-    /* _pageController = PageController(initialPage: 1, viewportFraction: 0.85)
-      ..addListener(_onScroll); */
+    _pageController = PageController(initialPage: 1, viewportFraction: 0.85)
+      ..addListener(_onScroll);
     super.initState();
   }
-/* 
+
   void _onScroll() {
     if (_pageController.page!.toInt() != prevPage) {
       prevPage = _pageController.page!.toInt();
@@ -194,10 +194,10 @@ class _HomePageState extends ConsumerState<HomePage> {
       goToTappedPlace();
       fetchImage();
     }
-  } */
+  }
 
   //Fetch image to place inside the tile in the pageView
-/*   void fetchImage() async {
+  void fetchImage() async {
     if (_pageController.page !=
         null) if (allFavoritePlaces[_pageController.page!.toInt()]
             ['photos'] !=
@@ -209,7 +209,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     } else {
       placeImg = '';
     }
-  } */
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -398,7 +398,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         ]),
                       )
                     : Container(),
-                  radiusSlider
+                radiusSlider
                     ? Padding(
                         padding: EdgeInsets.fromLTRB(15.0, 30.0, 15.0, 0.0),
                         child: Container(
@@ -416,7 +416,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         pressedNear = false;
                                         _setCircle(tappedPoint);
                                       })),
-                              /* !pressedNear
+                              !pressedNear
                                   ? IconButton(
                                       onPressed: () {
                                         if (_debounce?.isActive ?? false) {
@@ -515,13 +515,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       allFavoritePlaces = [];
                                     });
                                   },
-                                  icon: Icon(Icons.close, color: Colors.red)) */
+                                  icon: Icon(Icons.close, color: Colors.red))
                             ],
                           ),
                         ),
                       )
                     : Container(),
-                /*   pressedNear
+                pressedNear
                     ? Positioned(
                         bottom: 20.0,
                         child: Container(
@@ -534,8 +534,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 return _nearbyPlacesList(index);
                               }),
                         ))
-                    : Container(), */
-                /*  cardTapped
+                    : Container(),
+                cardTapped
                     ? Positioned(
                         top: 100.0,
                         left: 15.0,
@@ -721,7 +721,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             ),
                           ),
                         ))
-                    : Container() */
+                    : Container()
               ],
             )
           ],
@@ -742,7 +742,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  /*  _buildReviewItem(review) {
+  _buildReviewItem(review) {
     return Column(
       children: [
         Padding(
@@ -813,9 +813,9 @@ class _HomePageState extends ConsumerState<HomePage> {
         Divider(color: Colors.grey.shade600, height: 1.0)
       ],
     );
-  } */
+  }
 
-  /*  _buildPhotoGallery(photoElement) {
+  _buildPhotoGallery(photoElement) {
     if (photoElement == null || photoElement.length == 0) {
       showBlankCard = true;
       return Container(
@@ -921,7 +921,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       );
     }
   }
- */
+
   gotoPlace(double lat, double lng, double endLat, double endLng,
       Map<String, dynamic> boundsNe, Map<String, dynamic> boundsSw) async {
     final GoogleMapController controller = await _controller.future;
@@ -936,7 +936,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     _setMarker(LatLng(endLat, endLng));
   }
 
-/*   Future<void> moveCameraSlightly() async {
+  Future<void> moveCameraSlightly() async {
     final GoogleMapController controller = await _controller.future;
 
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
@@ -950,9 +950,9 @@ class _HomePageState extends ConsumerState<HomePage> {
         zoom: 14.0,
         bearing: 45.0,
         tilt: 45.0)));
-  } */
+  }
 
-  /* _nearbyPlacesList(index) {
+  _nearbyPlacesList(index) {
     return AnimatedBuilder(
       animation: _pageController,
       builder: (BuildContext context, Widget? widget) {
@@ -974,7 +974,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           cardTapped = !cardTapped;
           if (cardTapped) {
             tappedPlaceDetail = await MapServices()
-                .getPlace(allFavoritePlaces[index]['place_id']);
+                .getPlaceById(allFavoritePlaces[index]['place_id']);
             setState(() {});
           }
           moveCameraSlightly();
@@ -1096,9 +1096,9 @@ class _HomePageState extends ConsumerState<HomePage> {
         ),
       ),
     );
-  } */
+  }
 
-  /*  Future<void> goToTappedPlace() async {
+  Future<void> goToTappedPlace() async {
     final GoogleMapController controller = await _controller.future;
 
     _markers = {};
@@ -1118,7 +1118,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         zoom: 14.0,
         bearing: 45.0,
         tilt: 45.0)));
-  } */
+  }
 
   Future<void> gotoSearchedPlace(double lat, double lng) async {
     final GoogleMapController controller = await _controller.future;
@@ -1138,6 +1138,8 @@ class _HomePageState extends ConsumerState<HomePage> {
         },
         onTap: () async {
           var place = await MapServices().getPlaceById(placeItem.placeId);
+          logger.i(
+              "Lat: ${place['geometry']['location']['lat']}, Long:${place['geometry']['location']['lng']}");
           gotoSearchedPlace(place['geometry']['location']['lat'],
               place['geometry']['location']['lng']);
           searchFlag.toggleSearch();

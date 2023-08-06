@@ -1,27 +1,25 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:logger/logger.dart';
 import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/const/keywords.dart';
 import 'package:thesis_project/models/provider.dart';
 import 'package:thesis_project/utils/my_colors.dart';
 import 'package:thesis_project/utils/my_screensize.dart';
 import 'package:thesis_project/view_models/vm_search_provider.dart';
+import 'package:thesis_project/views/screens/map/map.dart';
+
+import '../../../models/current_location_details.dart';
 
 class FindProviderScreen extends StatefulWidget {
+  final CurrentLocationDetails currentLocationDetails;
   final String serviceCategory;
-  final double myLatitude;
-  final double myLongitude;
-  final String category;
   final int searchRange;
+
   const FindProviderScreen(
       {super.key,
+      required this.currentLocationDetails,
       required this.serviceCategory,
-      required this.myLatitude,
-      required this.myLongitude,
-      required this.category,
       required this.searchRange});
 
   @override
@@ -205,8 +203,11 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               NeumorphicButton(
+                onPressed: () {
+                  _mGotoMap();
+                },
                 style: NeumorphicStyle(
-                  border: NeumorphicBorder(color: Colors.black26),
+                    border: NeumorphicBorder(color: Colors.black26),
                     color: MyColors.caribbeanGreenTint7,
                     boxShape: NeumorphicBoxShape.roundRect(
                         BorderRadius.circular(24))),
@@ -252,9 +253,7 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
         ),
-        child: Column(
-    
-          children: [
+        child: Column(children: [
           // v: heading
           Row(
             children: [
@@ -285,14 +284,14 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
           // v: List
           !_isGettingResults
               ? Expanded(
-                child: ListView.builder(
-                // itemCount: _providerList!.length,
-                itemCount: 10,
-                // shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return _vItemProvider(_providerList![0]);
-                    }),
-              )
+                  child: ListView.builder(
+                      // itemCount: _providerList!.length,
+                      itemCount: 10,
+                      // shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return _vItemProvider(_providerList![0]);
+                      }),
+                )
               : CircularProgressIndicator(
                   color: Colors.black26,
                 )
@@ -385,7 +384,7 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
                         width: 2,
                       ),
                       Text(
-                       providerList.rating.toString(),
+                        providerList.rating.toString(),
                         style: TextStyle(
                           color: MyColors.spaceCadet,
                           fontWeight: FontWeight.w500,
@@ -408,9 +407,8 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     decoration: BoxDecoration(
-                      color: MyColors.caribbeanGreen.withOpacity(.3),
-                      borderRadius: BorderRadius.circular(5)
-                    ),
+                        color: MyColors.caribbeanGreen.withOpacity(.3),
+                        borderRadius: BorderRadius.circular(5)),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -431,7 +429,6 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
                       ],
                     ),
                   ),
-                  
                 ],
               ),
               /* SizedBox(width: 16,)
@@ -447,7 +444,10 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
             ],
           ),
           // v: underline
-          Divider(color: Colors.black12, height: 32,)
+          Divider(
+            color: Colors.black12,
+            height: 32,
+          )
         ],
       ),
     );
@@ -478,5 +478,11 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
         _isGettingResults = false;
       });
     });
+  }
+
+  void _mGotoMap() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      return MapScreen();
+    }));
   }
 }
