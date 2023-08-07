@@ -6,6 +6,7 @@ import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/const/keywords.dart';
+import 'package:thesis_project/models/auto_complete_result.dart';
 import 'package:thesis_project/models/provider.dart';
 import 'package:thesis_project/models/servie_category.dart';
 import 'package:thesis_project/utils/currency_format.dart';
@@ -23,7 +24,8 @@ import '../../../models/food.dart';
 import '../settings/settings.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final CurrentLocationDetails currentLocationDetails;
+  const HomeScreen({super.key, required this.currentLocationDetails});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -529,6 +531,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _mInitiate() {
     _focusNode = FocusNode();
+    _userAddress = widget.currentLocationDetails.formattedAdress!;
 
     for (var i = 1; i < 4; i++) {
       _listFood1.add(Food.bannarConstructor(

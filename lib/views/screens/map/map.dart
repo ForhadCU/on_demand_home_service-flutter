@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
+// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, curly_braces_in_flow_control_structures
 
 import 'dart:async';
 import 'dart:ui' as ui;
@@ -16,11 +16,20 @@ import 'package:logger/logger.dart';
 import 'package:thesis_project/const/constants.dart';
 
 import '../../../models/auto_complete_result.dart';
+import '../../../models/current_location_details.dart';
 import '../../../repository/repo_map_services.dart';
 import '../../../repository/repo_search_places.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
-  const MapScreen({Key? key}) : super(key: key);
+  final CurrentLocationDetails currentLocationDetails;
+  final String serviceCategory;
+  final int searchRange;
+  const MapScreen(
+      {required this.currentLocationDetails,
+      required this.serviceCategory,
+      required this.searchRange,
+      Key? key})
+      : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -79,136 +88,19 @@ class _HomePageState extends ConsumerState<MapScreen> {
   TextEditingController _destinationController = TextEditingController();
 
 //Initial map position on load
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    // zoom: 14.4746,
-    zoom: 16,
-  );
-
-  void _setMarker(point) {
-    var counter = markerIdCounter++;
-
-    final Marker marker = Marker(
-        markerId: MarkerId('marker_$counter'),
-        position: point,
-        onTap: () {},
-        icon: BitmapDescriptor.defaultMarker);
-
-    setState(() {
-      _markers.add(marker);
-    });
-  }
-
-  void _setPolyline(List<PointLatLng> points) {
-    final String polylineIdVal = 'polyline_$polylineIdCounter';
-
-    polylineIdCounter++;
-
-    _polylines.add(Polyline(
-        polylineId: PolylineId(polylineIdVal),
-        width: 2,
-        color: Colors.blue,
-        points: points.map((e) => LatLng(e.latitude, e.longitude)).toList()));
-  }
-
-  void _setCircle(LatLng point) async {
-    final GoogleMapController controller = await _controller.future;
-
-    controller.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(target: point, zoom: 12)));
-    setState(() {
-      _circles.add(Circle(
-          circleId: CircleId('raj'),
-          center: point,
-          fillColor: Colors.blue.withOpacity(0.1),
-          radius: radiusValue,
-          strokeColor: Colors.blue,
-          strokeWidth: 1));
-      getDirections = false;
-      searchToggle = false;
-      radiusSlider = true;
-    });
-  }
-
-  _setNearMarker(LatLng point, String label, List types, String status) async {
-    var counter = markerIdCounter++;
-
-    final Uint8List markerIcon;
-
-    if (types.contains('restaurants')) {
-      markerIcon =
-          await getBytesFromAsset('assets/mapicons/restaurants.png', 75);
-    } else if (types.contains('food')) {
-      markerIcon = await getBytesFromAsset('assets/mapicons/food.png', 75);
-    } else if (types.contains('school')) {
-      markerIcon = await getBytesFromAsset('assets/mapicons/schools.png', 75);
-    } else if (types.contains('bar')) {
-      markerIcon = await getBytesFromAsset('assets/mapicons/bars.png', 75);
-    } else if (types.contains('lodging')) {
-      markerIcon = await getBytesFromAsset('assets/mapicons/hotels.png', 75);
-    } else if (types.contains('store')) {
-      markerIcon =
-          await getBytesFromAsset('assets/mapicons/retail-stores.png', 75);
-    } else if (types.contains('locality')) {
-      markerIcon =
-          await getBytesFromAsset('assets/mapicons/local-services.png', 75);
-    } else {
-      markerIcon = await getBytesFromAsset('assets/mapicons/places.png', 75);
-    }
-
-    final Marker marker = Marker(
-        markerId: MarkerId('marker_$counter'),
-        position: point,
-        onTap: () {},
-        icon: BitmapDescriptor.fromBytes(markerIcon));
-
-    setState(() {
-      _markers.add(marker);
-    });
-  }
-
-  Future<Uint8List> getBytesFromAsset(String path, int width) async {
-    ByteData data = await rootBundle.load(path);
-
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
-        targetWidth: width);
-    ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
-        .buffer
-        .asUint8List();
-  }
+  static late CameraPosition _kGooglePlex;
 
   @override
   void initState() {
     _pageController = PageController(initialPage: 1, viewportFraction: 0.85)
       ..addListener(_onScroll);
+    _kGooglePlex = CameraPosition(
+      target: LatLng(widget.currentLocationDetails.lat!,
+          widget.currentLocationDetails.long!),
+      // zoom: 14.4746,
+      zoom: 16,
+    );
     super.initState();
-  }
-
-  void _onScroll() {
-    if (_pageController.page!.toInt() != prevPage) {
-      prevPage = _pageController.page!.toInt();
-      cardTapped = false;
-      photoGalleryIndex = 1;
-      showBlankCard = false;
-      goToTappedPlace();
-      fetchImage();
-    }
-  }
-
-  //Fetch image to place inside the tile in the pageView
-  void fetchImage() async {
-    if (_pageController.page !=
-        null) if (allFavoritePlaces[_pageController.page!.toInt()]
-            ['photos'] !=
-        null) {
-      setState(() {
-        placeImg = allFavoritePlaces[_pageController.page!.toInt()]['photos'][0]
-            ['photo_reference'];
-      });
-    } else {
-      placeImg = '';
-    }
   }
 
   @override
@@ -217,7 +109,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     //Providers
-    final allSearchResults = ref.watch(placeResultsProvider);
+    final placeResults = ref.watch(placeResultsProvider);
     final searchFlag = ref.watch(searchToggleProvider);
 
     return Scaffold(
@@ -254,13 +146,13 @@ class _HomePageState extends ConsumerState<MapScreen> {
                               borderRadius: BorderRadius.circular(10.0),
                               color: Colors.white,
                             ),
-                            child: _vSearchInput(searchFlag, allSearchResults),
+                            child: _vSearchInput(searchFlag, placeResults),
                           )
                         ]),
                       )
                     : Container(),
                 searchFlag.searchToggle
-                    ? allSearchResults.allReturnedResults.isNotEmpty
+                    ? placeResults.allReturnedResults.isNotEmpty
                         ? Positioned(
                             top: 100.0,
                             left: 15.0,
@@ -273,7 +165,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
                               ),
                               child: ListView(
                                 children: [
-                                  ...allSearchResults.allReturnedResults
+                                  ...placeResults.allReturnedResults
                                       .map((e) => buildListItem(e, searchFlag))
                                 ],
                               ),
@@ -740,6 +632,125 @@ class _HomePageState extends ConsumerState<MapScreen> {
             _vNavigationIconBtn(),
           ]),
     );
+  }
+
+  void _setMarker(point) {
+    var counter = markerIdCounter++;
+
+    final Marker marker = Marker(
+        markerId: MarkerId('marker_$counter'),
+        position: point,
+        onTap: () {},
+        icon: BitmapDescriptor.defaultMarker);
+
+    setState(() {
+      _markers.add(marker);
+    });
+  }
+
+  void _setPolyline(List<PointLatLng> points) {
+    final String polylineIdVal = 'polyline_$polylineIdCounter';
+
+    polylineIdCounter++;
+
+    _polylines.add(Polyline(
+        polylineId: PolylineId(polylineIdVal),
+        width: 2,
+        color: Colors.blue,
+        points: points.map((e) => LatLng(e.latitude, e.longitude)).toList()));
+  }
+
+  void _setCircle(LatLng point) async {
+    final GoogleMapController controller = await _controller.future;
+
+    controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(target: point, zoom: 12)));
+    setState(() {
+      _circles.add(Circle(
+          circleId: CircleId('raj'),
+          center: point,
+          fillColor: Colors.blue.withOpacity(0.1),
+          radius: radiusValue,
+          strokeColor: Colors.blue,
+          strokeWidth: 1));
+      getDirections = false;
+      searchToggle = false;
+      radiusSlider = true;
+    });
+  }
+
+  _setNearMarker(LatLng point, String label, List types, String status) async {
+    var counter = markerIdCounter++;
+
+    final Uint8List markerIcon;
+
+    if (types.contains('restaurants')) {
+      markerIcon =
+          await getBytesFromAsset('assets/mapicons/restaurants.png', 75);
+    } else if (types.contains('food')) {
+      markerIcon = await getBytesFromAsset('assets/mapicons/food.png', 75);
+    } else if (types.contains('school')) {
+      markerIcon = await getBytesFromAsset('assets/mapicons/schools.png', 75);
+    } else if (types.contains('bar')) {
+      markerIcon = await getBytesFromAsset('assets/mapicons/bars.png', 75);
+    } else if (types.contains('lodging')) {
+      markerIcon = await getBytesFromAsset('assets/mapicons/hotels.png', 75);
+    } else if (types.contains('store')) {
+      markerIcon =
+          await getBytesFromAsset('assets/mapicons/retail-stores.png', 75);
+    } else if (types.contains('locality')) {
+      markerIcon =
+          await getBytesFromAsset('assets/mapicons/local-services.png', 75);
+    } else {
+      markerIcon = await getBytesFromAsset('assets/mapicons/places.png', 75);
+    }
+
+    final Marker marker = Marker(
+        markerId: MarkerId('marker_$counter'),
+        position: point,
+        onTap: () {},
+        icon: BitmapDescriptor.fromBytes(markerIcon));
+
+    setState(() {
+      _markers.add(marker);
+    });
+  }
+
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
+  }
+
+  void _onScroll() {
+    if (_pageController.page!.toInt() != prevPage) {
+      prevPage = _pageController.page!.toInt();
+      cardTapped = false;
+      photoGalleryIndex = 1;
+      showBlankCard = false;
+      goToTappedPlace();
+      fetchImage();
+    }
+  }
+
+  //Fetch image to place inside the tile in the pageView
+  void fetchImage() async {
+    if (_pageController.page !=
+        null) if (allFavoritePlaces[_pageController.page!.toInt()]
+            ['photos'] !=
+        null) {
+      setState(() {
+        placeImg = allFavoritePlaces[_pageController.page!.toInt()]['photos'][0]
+            ['photo_reference'];
+      });
+    } else {
+      placeImg = '';
+    }
   }
 
   _buildReviewItem(review) {

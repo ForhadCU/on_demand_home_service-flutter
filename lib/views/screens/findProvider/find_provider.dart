@@ -27,6 +27,7 @@ class FindProviderScreen extends StatefulWidget {
 }
 
 class _FindProviderScreenState extends State<FindProviderScreen> {
+
   late TextEditingController _editCtrlerSearchbar;
 
   late int _searchRange;
@@ -482,7 +483,11 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
 
   void _mGotoMap() {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return MapScreen();
+      return MapScreen(
+        currentLocationDetails: widget.currentLocationDetails,
+        serviceCategory: widget.serviceCategory,
+        searchRange: widget.searchRange,
+     );
     }));
   }
 }
