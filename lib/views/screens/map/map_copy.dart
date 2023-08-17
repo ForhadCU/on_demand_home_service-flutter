@@ -8,7 +8,6 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,20 +15,17 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/const/keywords.dart';
-import 'package:thesis_project/models/provider.dart';
-import 'package:thesis_project/utils/my_colors.dart';
-import 'package:thesis_project/views/screens/profile/scr_provider_profile.dart';
 
 import '../../../models/auto_complete_result.dart';
 import '../../../models/current_location_details.dart';
 import '../../../repository/repo_map_services.dart';
 import '../../../repository/repo_search_places.dart';
 
-class MapScreen extends ConsumerStatefulWidget {
+class MapScreenCopy extends ConsumerStatefulWidget {
   final CurrentLocationDetails currentLocationDetails;
   final String serviceCategory;
   final int searchRange;
-  const MapScreen(
+  const MapScreenCopy(
       {required this.currentLocationDetails,
       required this.serviceCategory,
       required this.searchRange,
@@ -40,7 +36,7 @@ class MapScreen extends ConsumerStatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<MapScreen> {
+class _HomePageState extends ConsumerState<MapScreenCopy> {
   Completer<GoogleMapController> _controller = Completer();
   Logger _logger = Logger();
 
@@ -64,7 +60,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
   int markerIdCounter = 1;
   int polylineIdCounter = 1;
 
-  var radiusValue = 3000.0;
+  var radiusValue = 500.0;
 
   var tappedPoint;
 
@@ -75,7 +71,6 @@ class _HomePageState extends ConsumerState<MapScreen> {
   // //Page controller for the nice pageview
   late PageController _pageController;
   int prevPage = 0;
-
   var tappedPlaceDetail;
   String placeImg = '';
   var photoGalleryIndex = 0;
@@ -97,83 +92,6 @@ class _HomePageState extends ConsumerState<MapScreen> {
 
 //Initial map position on load
   static late CameraPosition _kGooglePlex;
-
-  late ServiceProvider tappedProviderDetails;
-
- /*  List<ServiceProvider> providerList = [
-  ServiceProvider(
-    name: "Ashraful Islam",
-    category: tutor,
-    imgUri: "assets/images/provider1.jpg",
-    rating: 4.8,
-    numOfReview: 120,
-    serviceFee: 450,
-    location: "Chittagong University Road, Chittagong",
-    lat: 22.4787345,
-    long: 91.7942796,
-    phone: "01819682374",
-  ),
-  ServiceProvider(
-    name: "Karimul Haque",
-    category: paintings,
-    imgUri: "assets/images/provider6.jpeg",
-    rating: 3.5,
-    numOfReview: 120,
-    location: "Chikandandi, Chittagong",
-    serviceFee: 450,
-    lat: 22.4481407,
-    long: 91.8224547,
-    phone: "01819682374",
-  ),
-  ServiceProvider(
-    name: "Ahsan Ullah",
-    category: acRepair,
-    imgUri: "assets/images/provider1.jpg",
-    rating: 4.8,
-    numOfReview: 120,
-    serviceFee: 450,
-    location: "Aman Bazaar, N106, Chittagong",
-    lat: 22.4213714,
-    long: 91.82010129999999,
-    phone: "01819682374",
-  ),
-  ServiceProvider(
-    name: "Diponkor Sheik",
-    category: shifting,
-    imgUri: "assets/images/provider4.jpeg",
-    rating: 3.5,
-    numOfReview: 120,
-    location: "Baluchara, Chittagong",
-    serviceFee: 450,
-    lat: 22.4090162,
-    long: 91.8178341,
-    phone: "01819682374",
-  ),
-  ServiceProvider(
-    name: "Shariful Rahman",
-    category: shifting,
-    imgUri: "assets/images/provider4.jpeg",
-    rating: 3.5,
-    numOfReview: 120,
-    location: "Jobra, Chittagong",
-    serviceFee: 450,
-    lat: 22.4875834,
-    long: 91.8098954,
-    phone: "01819682374",
-  ),
-  ServiceProvider(
-    name: "Maruf Kabir",
-    category: shifting,
-    imgUri: "assets/images/provider4.jpeg",
-    rating: 3.5,
-    numOfReview: 120,
-    location: "Baluchora, Chittagong",
-    serviceFee: 450,
-    lat: 21.4637269,
-    long: 91.9915908,
-    phone: "01819682374",
-  ),
-]; */
 
   @override
   void initState() {
@@ -380,7 +298,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
                               Expanded(
                                   child: Slider(
                                       max: 7000.0,
-                                      min: 1000.0,
+                                      min: 500.0,
                                       value: radiusValue,
                                       onChanged: (newVal) {
                                         radiusValue = newVal;
@@ -498,8 +416,6 @@ class _HomePageState extends ConsumerState<MapScreen> {
                         ),
                       )
                     : Container(),
-
-                // v: Title Card (Slide)
                 pressedNear
                     ? Positioned(
                         bottom: 20.0,
@@ -508,143 +424,98 @@ class _HomePageState extends ConsumerState<MapScreen> {
                           width: MediaQuery.of(context).size.width,
                           child: PageView.builder(
                               controller: _pageController,
-                              // itemCount: allFavoritePlaces.length,
-                              itemCount: providerList.length,
+                              itemCount: allFavoritePlaces.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return _nearbyPlacesList(index);
                               }),
                         ))
                     : Container(),
-
-                // v: Expaded card (Flip)
                 cardTapped
                     ? Positioned(
                         top: 100.0,
                         left: 15.0,
                         child: FlipCard(
                           front: Container(
-                            // height: 250.0,
-                            width: 185,
+                            height: 250.0,
+                            width: 175.0,
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(8.0))),
                             child: SingleChildScrollView(
-                              child: Column(
-                                  // mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      height: 150.0,
-                                      width: 185,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(8.0),
-                                          topRight: Radius.circular(8.0),
-                                        ),
-                                        /* image: DecorationImage(
-                                        image: NetworkImage(placeImg != ''
-                                            ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=$placeImg&key=$key'
-                                            : 'https://pic.onlinewebfonts.com/svg/img_546302.png'),
-                                        fit: BoxFit.cover), */
-                                        image: DecorationImage(
-                                            image: AssetImage(
-                                                tappedProviderDetails.imgUri!),
-                                            fit: BoxFit.fill),
+                              child: Column(children: [
+                                Container(
+                                  height: 150.0,
+                                  width: 175.0,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(8.0),
+                                        topRight: Radius.circular(8.0),
                                       ),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.all(7.0),
-                                      width: 185,
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Address: ',
-                                            style: TextStyle(
-                                                fontFamily: 'WorkSans',
-                                                fontSize: 12.0,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                          Container(
-                                              width: 105.0,
-                                              child: Text(
-                                                /* tappedPlaceDetail[
+                                      image: DecorationImage(
+                                          image: NetworkImage(placeImg != ''
+                                              ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=$placeImg&key=$key'
+                                              : 'https://pic.onlinewebfonts.com/svg/img_546302.png'),
+                                          fit: BoxFit.cover)),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.all(7.0),
+                                  width: 175.0,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Address: ',
+                                        style: TextStyle(
+                                            fontFamily: 'WorkSans',
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      Container(
+                                          width: 105.0,
+                                          child: Text(
+                                            tappedPlaceDetail[
                                                     'formatted_address'] ??
-                                                'none given', */
-                                                tappedProviderDetails.location!,
-                                                style: TextStyle(
-                                                    fontFamily: 'WorkSans',
-                                                    fontSize: 11.0,
-                                                    fontWeight:
-                                                        FontWeight.w400),
-                                              ))
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          7.0, 0.0, 7.0, 0.0),
-                                      width: 185,
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Contact: ',
+                                                'none given',
                                             style: TextStyle(
                                                 fontFamily: 'WorkSans',
-                                                fontSize: 12.0,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                          Container(
-                                              width: 105.0,
-                                              child: Text(
-                                                /* tappedPlaceDetail[
-                                                    'formatted_phone_number'] */
-                                                tappedProviderDetails.phone ??
-                                                    'none given',
-                                                style: TextStyle(
-                                                    fontFamily: 'WorkSans',
-                                                    fontSize: 11.0,
-                                                    fontWeight:
-                                                        FontWeight.w400),
-                                              ))
-                                        ],
+                                                fontSize: 11.0,
+                                                fontWeight: FontWeight.w400),
+                                          ))
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding:
+                                      EdgeInsets.fromLTRB(7.0, 0.0, 7.0, 0.0),
+                                  width: 175.0,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Contact: ',
+                                        style: TextStyle(
+                                            fontFamily: 'WorkSans',
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.w500),
                                       ),
-                                    ),
-                                    SizedBox(height: 12),
-                                    NeumorphicButton(
-                                      onPressed: () {
-                                        _mGotoProfile();
-                                      },
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 4, horizontal: 50),
-                                      style: NeumorphicStyle(
-                                          color: MyColors.caribbeanGreen),
-                                      child: Text(
-                                        "Profile",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    NeumorphicButton(
-                                      onPressed: () {
-                                        _mShowDirection();
-                                      },
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 4, horizontal: 44),
-                                      style: NeumorphicStyle(
-                                          color: MyColors.vividCerulean),
-                                      child: Text(
-                                        "Direction",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 6,
-                                    ),
-                                  ]),
+                                      Container(
+                                          width: 105.0,
+                                          child: Text(
+                                            tappedPlaceDetail[
+                                                    'formatted_phone_number'] ??
+                                                'none given',
+                                            style: TextStyle(
+                                                fontFamily: 'WorkSans',
+                                                fontSize: 11.0,
+                                                fontWeight: FontWeight.w400),
+                                          ))
+                                    ],
+                                  ),
+                                ),
+                              ]),
                             ),
                           ),
                           back: Container(
@@ -724,8 +595,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
                                     ],
                                   ),
                                 ),
-                                // v: Reviews list
-                                /*  Container(
+                                Container(
                                   height: 250.0,
                                   child: isReviews
                                       ? ListView(
@@ -741,12 +611,6 @@ class _HomePageState extends ConsumerState<MapScreen> {
                                         )
                                       : _buildPhotoGallery(
                                           tappedPlaceDetail['photos'] ?? []),
-                                ) */
-                                Container(
-                                  height: 250.0,
-                                  child: isReviews
-                                      ? _buildReviewItem()
-                                      : Container(),
                                 )
                               ],
                             ),
@@ -803,7 +667,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
     final GoogleMapController controller = await _controller.future;
 
     controller.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(target: point, zoom: 12.8)));
+        CameraPosition(target: point, zoom: 15)));
     setState(() {
       _circles.add(Circle(
           circleId: CircleId('raj'),
@@ -818,14 +682,14 @@ class _HomePageState extends ConsumerState<MapScreen> {
     });
   }
 
-  // _setNearMarker(LatLng point, String label, List types, String status) async {
-  _setNearMarker(
-      LatLng point, String label, String types, String status) async {
+  _setNearMarker(LatLng point, String label, List types, String status) async {
+    // _setNearMarker(
+    //     LatLng point, String label, String types, String status) async {
     var counter = markerIdCounter++;
-
+    logger.d(counter);
     final Uint8List markerIcon;
 
-    /* if (types.contains('restaurants')) {
+    if (types.contains('restaurants')) {
       markerIcon =
           await getBytesFromAsset('assets/mapicons/restaurants.png', 75);
     } else if (types.contains('food')) {
@@ -844,34 +708,37 @@ class _HomePageState extends ConsumerState<MapScreen> {
           await getBytesFromAsset('assets/mapicons/local-services.png', 75);
     } else {
       markerIcon = await getBytesFromAsset('assets/mapicons/places.png', 75);
-    } */
+    }
 
-    if (types == acRepair) {
+    /*  if (types.contains(acRepair)) {
+      markerIcon =
+          await getBytesFromAsset('assets/mapicons/restaurants.png', 75);
+    } else if (types.contains(paintings)) {
+      markerIcon = await getBytesFromAsset('assets/mapicons/food.png', 75);
+    } else if (types.contains(electronics)) {
+      markerIcon = await getBytesFromAsset('assets/mapicons/schools.png', 75);
+    } else if (types.contains(cleaning)) {
+      markerIcon = await getBytesFromAsset('assets/mapicons/bars.png', 75);
+    } else if (types.contains(beauty)) {
+      markerIcon = await getBytesFromAsset('assets/mapicons/hotels.png', 75);
+    } else if (types.contains(appliance)) {
+      markerIcon =
+          await getBytesFromAsset('assets/mapicons/retail-stores.png', 75);
+    } else if (types.contains(plumbing)) {
       markerIcon =
           await getBytesFromAsset('assets/mapicons/local-services.png', 75);
-    } else if (types == paintings) {
-      markerIcon = await getBytesFromAsset('assets/mapicons/local-services.png', 75);
-    } else if (types == electronics) {
-      markerIcon = await getBytesFromAsset('assets/mapicons/local-services.png', 75);
-    } else if (types == cleaning) {
-      markerIcon = await getBytesFromAsset('assets/mapicons/local-services.png', 75);
-    } else if (types == beauty) {
-      markerIcon = await getBytesFromAsset('assets/mapicons/local-services.png', 75);
-    } else if (types == plumbing) {
+    } else if (types.contains(shifting)) {
       markerIcon =
           await getBytesFromAsset('assets/mapicons/local-services.png', 75);
-    } else if (types == shifting) {
+    } else if (types.contains(barber)) {
       markerIcon =
           await getBytesFromAsset('assets/mapicons/local-services.png', 75);
-    } else if (types == barber) {
-      markerIcon =
-          await getBytesFromAsset('assets/mapicons/local-services.png', 75);
-    } else if (types == tutor) {
+    } else if (types.contains(tutor)) {
       markerIcon =
           await getBytesFromAsset('assets/mapicons/local-services.png', 75);
     } else {
-      markerIcon = await getBytesFromAsset('assets/mapicons/local-services.png', 75);
-    }
+      markerIcon = await getBytesFromAsset('assets/mapicons/places.png', 75);
+    } */
 
     final Marker marker = Marker(
         markerId: MarkerId('marker_$counter'),
@@ -921,8 +788,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
     }
   }
 
-  // _buildReviewItem(review) {
-  _buildReviewItem() {
+  _buildReviewItem(review) {
     return Column(
       children: [
         Padding(
@@ -933,23 +799,17 @@ class _HomePageState extends ConsumerState<MapScreen> {
                 height: 35.0,
                 width: 35.0,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  /* image: DecorationImage(
-                      image: NetworkImage(review['profile_photo_url']),
-                      fit: BoxFit.cover), */
-
-                  image: DecorationImage(
-                      image: AssetImage("assets/images/provider7.jpeg"),
-                      fit: BoxFit.fill),
-                ),
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                        image: NetworkImage(review['profile_photo_url']),
+                        fit: BoxFit.cover)),
               ),
               SizedBox(width: 4.0),
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Container(
                   width: 160.0,
                   child: Text(
-                    // review['author_name'],
-                    "Author Name",
+                    review['author_name'],
                     style: TextStyle(
                         fontFamily: 'WorkSans',
                         fontSize: 12.0,
@@ -958,8 +818,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
                 ),
                 SizedBox(height: 3.0),
                 RatingStars(
-                  // value: review['rating'] * 1.0,
-                  value: 4.7,
+                  value: review['rating'] * 1.0,
                   starCount: 5,
                   starSize: 7,
                   valueLabelColor: const Color(0xff9b9b9b),
@@ -989,8 +848,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
           padding: EdgeInsets.all(8.0),
           child: Container(
             child: Text(
-              // review['text'],
-              "This is review text",
+              review['text'],
               style: TextStyle(
                   fontFamily: 'WorkSans',
                   fontSize: 11.0,
@@ -1129,17 +987,12 @@ class _HomePageState extends ConsumerState<MapScreen> {
 
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
         target: LatLng(
-            providerList[_pageController.page!.toInt()]
-                    .lat! + 0.0125,
-            providerList[_pageController.page!.toInt()].long! +
-                0.005)
-                /* LatLng(
             allFavoritePlaces[_pageController.page!.toInt()]['geometry']
                     ['location']['lat'] +
                 0.0125,
             allFavoritePlaces[_pageController.page!.toInt()]['geometry']
                     ['location']['lng'] +
-                0.005) */,
+                0.005),
         zoom: 14.0,
         bearing: 45.0,
         tilt: 45.0)));
@@ -1164,12 +1017,10 @@ class _HomePageState extends ConsumerState<MapScreen> {
       },
       child: InkWell(
         onTap: () async {
-          logger.d("tapped Slide card ");
           cardTapped = !cardTapped;
           if (cardTapped) {
-            /* tappedPlaceDetail = await MapServices()
-                .getPlaceById(allFavoritePlaces[index]['place_id']); */
-            tappedProviderDetails = providerList[index];
+            tappedPlaceDetail = await MapServices()
+                .getPlaceById(allFavoritePlaces[index]['place_id']);
             setState(() {});
           }
           moveCameraSlightly();
@@ -1198,38 +1049,33 @@ class _HomePageState extends ConsumerState<MapScreen> {
                       color: Colors.white),
                   child: Row(
                     children: [
-                      /* _pageController.position.haveDimensions
+                      _pageController.position.haveDimensions
                           ? _pageController.page!.toInt() == index
-                              ?  */
-                      Container(
-                        height: 90.0,
-                        width: 90.0,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(10.0),
-                            topLeft: Radius.circular(10.0),
-                          ),
-                          /* image: DecorationImage(
-                                        image: NetworkImage(placeImg != ''
-                                            ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=$placeImg&key=$key'
-                                            : 'https://pic.onlinewebfonts.com/svg/img_546302.png'),
-                                        fit: BoxFit.cover), */
-                          image: DecorationImage(
-                              image: AssetImage(providerList[index].imgUri!),
-                              fit: BoxFit.cover),
-                        ),
-                      ),
-                      /* :  Container(
-                        height: 90.0,
-                        width: 20.0,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(10.0),
-                              topLeft: Radius.circular(10.0),
-                            ),
-                            color: Colors.blue),
-                      ),*/
-                      // : Container(),
+                              ? Container(
+                                  height: 90.0,
+                                  width: 90.0,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                        bottomLeft: Radius.circular(10.0),
+                                        topLeft: Radius.circular(10.0),
+                                      ),
+                                      image: DecorationImage(
+                                          image: NetworkImage(placeImg != ''
+                                              ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=$placeImg&key=$key'
+                                              : 'https://pic.onlinewebfonts.com/svg/img_546302.png'),
+                                          fit: BoxFit.cover)),
+                                )
+                              : Container(
+                                  height: 90.0,
+                                  width: 20.0,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                        bottomLeft: Radius.circular(10.0),
+                                        topLeft: Radius.circular(10.0),
+                                      ),
+                                      color: Colors.blue),
+                                )
+                          : Container(),
                       SizedBox(width: 5.0),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1237,19 +1083,18 @@ class _HomePageState extends ConsumerState<MapScreen> {
                         children: [
                           Container(
                             width: 170.0,
-                            // child: Text(allFavoritePlaces[index]['name'],
-                            child: Text(providerList[index].name!,
+                            child: Text(allFavoritePlaces[index]['name'],
                                 style: TextStyle(
                                     fontSize: 12.5,
                                     fontFamily: 'WorkSans',
                                     fontWeight: FontWeight.bold)),
                           ),
                           RatingStars(
-                            value:
-                                /* providerList[index].rating!.runtimeType == int
-                                    ? allFavoritePlaces[index]['rating'] * 1.0
-                                    : allFavoritePlaces[index]['rating'] ?? 0.0, */
-                                providerList[index].rating!,
+                            value: allFavoritePlaces[index]['rating']
+                                        .runtimeType ==
+                                    int
+                                ? allFavoritePlaces[index]['rating'] * 1.0
+                                : allFavoritePlaces[index]['rating'] ?? 0.0,
                             starCount: 5,
                             starSize: 10,
                             valueLabelColor: const Color(0xff9b9b9b),
@@ -1274,16 +1119,14 @@ class _HomePageState extends ConsumerState<MapScreen> {
                           Container(
                             width: 170.0,
                             child: Text(
-                              /* allFavoritePlaces[index]['business_status'] ??
-                                  'none', */
-                              "Distance : 5 km",
+                              allFavoritePlaces[index]['business_status'] ??
+                                  'none',
                               style: TextStyle(
-                                  /* color: allFavoritePlaces[index]
+                                  color: allFavoritePlaces[index]
                                               ['business_status'] ==
                                           'OPERATIONAL'
-                                      ? Colors.blue
-                                      : Colors.red, */
-                                  color: Colors.blue,
+                                      ? Colors.green
+                                      : Colors.red,
                                   fontSize: 11.0,
                                   fontWeight: FontWeight.w700),
                             ),
@@ -1306,21 +1149,18 @@ class _HomePageState extends ConsumerState<MapScreen> {
 
     _markers = {};
 
-    // var selectedPlace = allFavoritePlaces[_pageController.page!.toInt()];
-    var selectedProvider = providerList[_pageController.page!.toInt()];
+    var selectedPlace = allFavoritePlaces[_pageController.page!.toInt()];
 
     _setNearMarker(
-      LatLng(selectedProvider.lat!, selectedProvider.long!),
-      selectedProvider.name ?? 'Provider 1',
-      selectedProvider.category!,
-      'none',
-    );
+        LatLng(selectedPlace['geometry']['location']['lat'],
+            selectedPlace['geometry']['location']['lng']),
+        selectedPlace['name'] ?? 'no name',
+        selectedPlace['types'],
+        selectedPlace['business_status'] ?? 'none');
 
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(
-          selectedProvider.lat!,
-          selectedProvider.long!,
-        ),
+        target: LatLng(selectedPlace['geometry']['location']['lat'],
+            selectedPlace['geometry']['location']['lng']),
         zoom: 14.0,
         bearing: 45.0,
         tilt: 45.0)));
@@ -1455,34 +1295,18 @@ class _HomePageState extends ConsumerState<MapScreen> {
 
     List<dynamic> placesWithin = placesResult['results'] as List;
 
-    logger.d("PlaceDetails: $placesWithin");
-
     allFavoritePlaces = placesWithin;
-    // allFavoritePlaces = providerList;
 
     tokenKey = placesResult['next_page_token'] ?? 'none';
-    _markers = {
-      Marker(
-          markerId: MarkerId('marker_id'),
-          position: LatLng(widget.currentLocationDetails.lat!,
-              widget.currentLocationDetails.long!),
-          onTap: () {},
-          icon: BitmapDescriptor.fromBytes(
-              await getBytesFromAsset('assets/images/ic_my_position.png', 75)))
-    };
-
-    /* for (var element in placesWithin) {
+    _markers = {};
+    for (var element in placesWithin) {
       // for (var element in providerList) {
       _setNearMarker(
-        /* LatLng(element['geometry']['location']['lat'],
-            element['geometry']['location']['lng']), */
-        LatLng(widget.currentLocationDetails.lat!,
-            widget.currentLocationDetails.long!),
-        // element['name'],
-        providerList[0].name!,
-        providerList[0].category!,
-        // element['types'],
-        'not available',
+        LatLng(element['geometry']['location']['lat'],
+            element['geometry']['location']['lng']),
+        element['name'],
+        element['types'],
+        element['business_status'] ?? 'not available',
       );
 
       /*  LatLng(element.lat!, element.long!),
@@ -1490,17 +1314,6 @@ class _HomePageState extends ConsumerState<MapScreen> {
           element.category!,
           element.id ?? "Not available");
       logger.d("Elelments: ${element.toJson()}"); */
-    } */
-    for (var i = 0; i < providerList.length; i++) {
-      _setNearMarker(
-        LatLng(providerList[i].lat!, providerList[i].long!),
-        // LatLng(allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lat'],
-        //     allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lng']),
-        providerList[i].name!,
-        providerList[i].category!,
-        // element['types'],
-        'not available',
-      );
     }
     _markersDupe = _markers;
     pressedNear = true;
@@ -1522,35 +1335,5 @@ class _HomePageState extends ConsumerState<MapScreen> {
 
     await _setCircle(tappedPoint);
     await _mDisplayAvailableUsers();
-  }
-
-  void _mGotoProfile() {
-    Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-      return ProviderProfileScreen();
-    })));
-  }
-
-  void _mShowDirection() async {
-    setState(() {
-      searchToggle = false;
-      radiusSlider = false;
-      pressedNear = false;
-      cardTapped = false;
-      getDirections = true;
-    });
-    var directions = await MapServices().getDirectionsByPlaceId(
-        originPlaceId: "ChIJk0oxlITHrTARw11nLQBaR30",
-        destinationPlaceId: "ChIJVani2A24rTAREzuXbvDGc1g");
-    _markers = {};
-    _polylines = {};
-    logger.d(directions);
-    gotoPlace(
-        widget.currentLocationDetails.lat!,
-        widget.currentLocationDetails.long!,
-        directions['end_location']['lat'],
-        directions['end_location']['lng'],
-        directions['bounds_ne'],
-        directions['bounds_sw']);
-    _setPolyline(directions['polyline_decoded']);
   }
 }

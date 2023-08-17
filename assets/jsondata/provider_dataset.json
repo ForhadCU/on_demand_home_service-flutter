@@ -1,0 +1,25 @@
+{
+  "providers": [
+    {
+      "name": "Ashraful Islam",
+      "category": "tutor",
+      "imgUri": "assets/images/provider4.jpeg",
+      "rating": 1.1,
+      "monthlyRating": 1.1,
+      "numOfReview": 120,
+      "serviceFee": 450,
+      "location": "Chittagong University Road, Chittagong",
+      "lat": 22.4787345,
+      "long": 91.7942796,
+      "phone": "01819682374",
+      "jobs": [
+        {
+          "consumer_name": "Consumer 003",
+          "workingHour": 2,
+          "ts": 1121323232
+        }
+      ],
+      "active_period": 34
+    }
+  ]
+}

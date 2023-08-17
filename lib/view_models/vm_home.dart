@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:thesis_project/models/current_location_details.dart';
@@ -173,4 +170,14 @@ class HomeViewModel {
 
     return placeName;
   }
+
+  void mGenerateProviderDataset() {
+    int randIndex = DateTime.now().microsecondsSinceEpoch % 10;
+    logger.d("RandIndex: $randIndex");
+  }
+}
+
+void main() {
+  HomeViewModel homeViewModel = HomeViewModel();
+  homeViewModel.mGenerateProviderDataset();
 }

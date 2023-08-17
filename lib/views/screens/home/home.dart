@@ -1,27 +1,25 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers
 
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/const/keywords.dart';
-import 'package:thesis_project/models/auto_complete_result.dart';
 import 'package:thesis_project/models/provider.dart';
 import 'package:thesis_project/models/servie_category.dart';
-import 'package:thesis_project/utils/currency_format.dart';
 import 'package:thesis_project/utils/custom_text.dart';
 import 'package:thesis_project/utils/my_colors.dart';
 import 'package:thesis_project/utils/my_screensize.dart';
 import 'package:thesis_project/utils/statusbar.dart';
 import 'package:thesis_project/view_models/vm_home.dart';
+import 'package:thesis_project/views/bookings/scr.bookings.dart';
 import 'package:thesis_project/views/screens/findProvider/find_provider.dart';
 import 'package:thesis_project/views/screens/home/widgets/bottom_nav.dart';
+import 'package:thesis_project/views/screens/profile/scr_provider_profile.dart';
 
 import '../../../models/booking.dart';
 import '../../../models/current_location_details.dart';
 import '../../../models/food.dart';
-import '../settings/settings.dart';
 
 class HomeScreen extends StatefulWidget {
   final CurrentLocationDetails currentLocationDetails;
@@ -43,10 +41,11 @@ class _HomeScreenState extends State<HomeScreen> {
   late bool _isLocationAccessGranted;
   late CurrentLocationDetails? _currentLocationDetails;
 
+  var _controllerAddress;
+
   @override
   void initState() {
     super.initState();
-    uCustomStatusBar();
     _mInitiate();
     _mManageLocationReq();
     _mLoadData();
@@ -54,12 +53,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    uCustomStatusBar();
+
     return SafeArea(
       child: Scaffold(
           backgroundColor: MyColors.caribbeanGreenTint7.withOpacity(1),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              _mOnClickSearchBtn();
+              // _mOnClickSearchBtn();
+
+              // e: test
+              
             },
             shape: CircleBorder(),
             backgroundColor: MyColors.spaceCadetTint1,
@@ -83,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
           body: _pageIndex == 0
               ? _vHome()
               : _pageIndex == 1
-                  ? SettingsScreen()
+                  ? BookingsScreen()
                   : null),
     );
   }
@@ -339,18 +343,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _vUserImage() {
-    return Container(
-      // padding: EdgeInsets.all(4),
-      height: MyScreenSize.mGetHeight(context, 6),
-      width: MyScreenSize.mGetWidth(context, 14),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.black12)
-          // color: MyColors.caribbeanGreen
-          ),
-      child: Image(
-        image: AssetImage("assets/images/image 1.png"),
-        fit: BoxFit.fill,
+    return InkWell(
+      onTap: () {
+        _vAction();
+      },
+      child: Container(
+        // padding: EdgeInsets.all(4),
+        height: MyScreenSize.mGetHeight(context, 6),
+        width: MyScreenSize.mGetWidth(context, 14),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.black12)
+            // color: MyColors.caribbeanGreen
+            ),
+        child: Image(
+          image: AssetImage("assets/images/image 1.png"),
+          fit: BoxFit.fill,
+        ),
       ),
     );
   }
@@ -378,10 +387,10 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(
               width: 2,
             ),
-            CustomText(
-              text: _userAddress,
-              fontsize: 14,
-            ),
+            Text(
+              _userAddress,
+              style: TextStyle(fontSize: 14),
+            )
           ],
         )
       ]),
@@ -532,6 +541,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void _mInitiate() {
     _focusNode = FocusNode();
     _userAddress = widget.currentLocationDetails.formattedAdress!;
+    _currentLocationDetails = widget.currentLocationDetails;
+
+    // _controllerAddress = TextEditingController(text: _userAddress);
+    // c: cut long userAdress
+    if (_userAddress.length > 30) {
+      _userAddress = "${_userAddress.substring(0, 30)}...";
+    }
 
     for (var i = 1; i < 4; i++) {
       _listFood1.add(Food.bannarConstructor(
@@ -556,7 +572,7 @@ class _HomeScreenState extends State<HomeScreen> {
   _vItem(ServiceCategory serviceCategoryList) {
     return InkWell(
       onTap: () {
-        _mOnClickCategory();
+        _mOnClickCategory(serviceCategoryList);
       },
       child: Container(
         width: MyScreenSize.mGetWidth(context, 20),
@@ -616,10 +632,10 @@ class _HomeScreenState extends State<HomeScreen> {
           width: MyScreenSize.mGetWidth(context, 100),
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              // itemCount: providerList.length,
-              itemCount: 5,
+              itemCount: providerList.length,
+              // itemCount: 5,
               itemBuilder: (context, index) {
-                return _vItemProvider(providerList[0]);
+                return _vItemProvider(providerList[index]);
               }),
         )
       ],
@@ -745,7 +761,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ]),
             child: CircleAvatar(
               backgroundColor: Colors.white,
-              backgroundImage: AssetImage("assets/images/provider1.jpg"),
+              backgroundImage: AssetImage(providerList.imgUri!),
               radius: 32,
             ),
           ),
@@ -789,13 +805,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _mManageLocationReq() async {
-    _currentLocationDetails =
-        await _homeViewModel.mManageLocAccessAndFetchCurrentPos();
+
+    /* _currentLocationDetails =
+        await _homeViewModel.mManageLocAccessAndFetchCurrentPos(); */
     logger.d(
         "CurrentLocationDetails: ${_currentLocationDetails!.lat}, ${_currentLocationDetails!.long},${_currentLocationDetails!.formattedAdress}");
   }
 
-  void _mOnClickCategory() async {
+  void _mOnClickCategory(ServiceCategory serviceCategoryList) async {
     // m: This function should be code into Viewmodel
 
     _isLocationAccessGranted = await _homeViewModel.mCheckLocationPermission();
@@ -863,11 +880,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _mGotoSearchScreen() {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      logger.d(
+          "My lat: ${_currentLocationDetails!.lat}, My long: ${_currentLocationDetails!.long}, My place: ${_currentLocationDetails!.formattedAdress}");
+
       return FindProviderScreen(
         currentLocationDetails: _currentLocationDetails!,
-        serviceCategory: "",
-        searchRange: 5,
+        serviceCategory: acRepair,
+        searchRange: 2,
       );
     }));
+  }
+
+  void _vAction() {
+    Navigator.push(context, MaterialPageRoute(builder: ((context) {
+      return ProviderProfileScreen();
+    })));
   }
 }

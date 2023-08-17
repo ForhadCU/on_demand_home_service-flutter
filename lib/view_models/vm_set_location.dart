@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -17,12 +19,10 @@ class SetLocationViewModel {
       await mRequestLocationPermission().then((isGranted) async {
         isGranted
             ? {
-                await mGetCurrentLocationDetails()
-                    .then((result) {
+                await mGetCurrentLocationDetails().then((result) {
                   if (result != null) {
                     logger.d(
                         "1. My current lat: ${result.lat}, My current long: ${result.long}, My current location: ${result.formattedAdress}");
-
                     _currentLocationDetails = result;
                   }
                 })
@@ -90,18 +90,23 @@ class SetLocationViewModel {
     double lat;
     double long;
     String formattedAdress;
+    String placeId;
     CurrentLocationDetails? currentLocationDetails;
     bool _isLocationAccessGranted;
+
+    logger.d("Position: $position");
 
     if (position == null) {
       return null;
     } else {
       lat = position.latitude;
       long = position.longitude;
-      String? res = await mGetPlaceName(lat, long);
+      Map<String, String>? res = await mGetPlaceName(lat, long);
+      logger.d(res);
       res != null
           ? {
-              formattedAdress = res,
+              formattedAdress = res["placeName"]!,
+              placeId = res["placeId"]!,
               currentLocationDetails = CurrentLocationDetails(
                   lat: lat, long: long, formattedAdress: formattedAdress),
             }
@@ -111,12 +116,17 @@ class SetLocationViewModel {
     return currentLocationDetails;
   }
 
-  Future<String?> mGetPlaceName(double latitude, double longitude) async {
+  Future<Map<String, String>?> mGetPlaceName(
+      double latitude, double longitude) async {
     // List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
     logger.w("Wait. Getting Place Name...");
+    logger.i(latitude);
+    logger.i(longitude);
     String? placeName;
+    String? placeId;
     List<ReverseGeocodeLocDetails> listReverseGeocodeLocDetails =
         await _setLocationRepo.mGetPlaceName(latitude, longitude);
+    logger.i("L: ${listReverseGeocodeLocDetails.length}");
 
     for (var element in listReverseGeocodeLocDetails) {
       if (element.formattedAddress!.contains("CRX") ||
@@ -126,10 +136,11 @@ class SetLocationViewModel {
       } else {
         logger.d("My current place name is: ${element.formattedAddress}");
         placeName = element.formattedAddress;
+        placeId = element.placeId;
         break;
       }
     }
 
-    return placeName;
+    return {"placeName": placeName!, "placeId": placeId!};
   }
 }

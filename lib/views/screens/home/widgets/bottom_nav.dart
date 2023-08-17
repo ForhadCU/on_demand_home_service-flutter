@@ -146,14 +146,14 @@ class _HomeBottomNavBarState extends State<HomeBottomNavBar> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  Icons.settings,
+                  Icons.view_list,
                   color: tabColor1,
                 ),
                 const SizedBox(
                   height: 4,
                 ),
                 Text(
-                  "Settings",
+                  "Bookings",
                   style: TextStyle(color: tabColor1),
                 )
               ],

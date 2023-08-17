@@ -2,9 +2,9 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/models/current_location_details.dart';
@@ -31,6 +31,8 @@ class _SetLocationScreenState extends ConsumerState<SetLocationScreen> {
   TextEditingController searchController = TextEditingController();
   Timer? _debounce;
   final SetLocationViewModel _setLocationViewModel = SetLocationViewModel();
+
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -85,7 +87,7 @@ class _SetLocationScreenState extends ConsumerState<SetLocationScreen> {
                   fontWeight: FontWeight.bold),
             ),
             NeumorphicText(
-              "Loaction",
+              "Location",
               style: NeumorphicStyle(
                   depth: 1,
                   // shadowDarkColor: MyColors.spaceCadetShadow1,
@@ -258,43 +260,51 @@ class _SetLocationScreenState extends ConsumerState<SetLocationScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.max,
       children: [
-        NeumorphicButton(
-          onPressed: () async {
-            CurrentLocationDetails? currentLocationDetails =
-                await _setLocationViewModel
-                    .mManageLocAccessAndFetchCurrentPos();
-            if (currentLocationDetails != null) {
-              logger.d(currentLocationDetails.formattedAdress);
-              _mGotoHome(currentLocationDetails);
-            } else {
-              logger.d("null");
-            }
-          },
-          margin: EdgeInsets.only(top: 56),
-          padding: EdgeInsets.symmetric(
-            vertical: 5,
-            horizontal: 12,
-          ),
-          style: NeumorphicStyle(color: MyColors.vividCerulean, depth: 1),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.my_location,
-                size: 18,
-                color: Colors.white,
-              ),
-              SizedBox(
-                width: 12,
-              ),
-              Text(
-                "Use My Current Location",
-                style: TextStyle(color: Colors.white, fontSize: 14),
+        !_isLoading
+            ? NeumorphicButton(
+                onPressed: () async {
+                  setState(() {
+                    _isLoading = true;
+                  });
+                  CurrentLocationDetails? currentLocationDetails =
+                      await _setLocationViewModel
+                          .mManageLocAccessAndFetchCurrentPos();
+                  if (currentLocationDetails != null) {
+                    logger.d(currentLocationDetails.formattedAdress);
+                    _mGotoHome(currentLocationDetails);
+                  } else {
+                    logger.d("null");
+                  }
+                },
+                margin: EdgeInsets.only(top: 56),
+                padding: EdgeInsets.symmetric(
+                  vertical: 5,
+                  horizontal: 12,
+                ),
+                style: NeumorphicStyle(color: MyColors.vividCerulean, depth: 1),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.my_location,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                    SizedBox(
+                      width: 12,
+                    ),
+                    Text(
+                      "Use My Current Location",
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    )
+                  ],
+                ),
               )
-            ],
-          ),
-        ),
+            : GFLoader(
+                type: GFLoaderType.ios,
+                size: 24,
+              ),
       ],
     );
   }
@@ -446,7 +456,7 @@ class _SetLocationScreenState extends ConsumerState<SetLocationScreen> {
     );
   }
 
-  void _mGotoHome(CurrentLocationDetails currentLocationDetails) async {
+  void _mGotoHome(CurrentLocationDetails currentLocationDetails) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return HomeScreen(
         currentLocationDetails: currentLocationDetails,

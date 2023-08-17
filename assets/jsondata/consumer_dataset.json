@@ -1,0 +1,19 @@
+{
+    "consumers":[
+        {
+            "name": "Ashraful Islam",
+            "imgUri": "assets/images/provider4.jpeg",
+            "location": "Chittagong University Road, Chittagong",
+            "lat": 22.4787345,
+            "long": 91.7942796,
+            "phone": "01819682374",
+            "hires":[
+                {
+                    "category": "electrician",
+                    "ts": 2182838848
+                }
+            ],
+            "active_period": 34
+        }
+    ]
+}

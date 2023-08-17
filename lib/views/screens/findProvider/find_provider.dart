@@ -6,7 +6,7 @@ import 'package:thesis_project/const/keywords.dart';
 import 'package:thesis_project/models/provider.dart';
 import 'package:thesis_project/utils/my_colors.dart';
 import 'package:thesis_project/utils/my_screensize.dart';
-import 'package:thesis_project/view_models/vm_search_provider.dart';
+import 'package:thesis_project/view_models/vm_find_provider.dart';
 import 'package:thesis_project/views/screens/map/map.dart';
 
 import '../../../models/current_location_details.dart';
@@ -27,14 +27,13 @@ class FindProviderScreen extends StatefulWidget {
 }
 
 class _FindProviderScreenState extends State<FindProviderScreen> {
-
   late TextEditingController _editCtrlerSearchbar;
 
   late int _searchRange;
 
   late String _myLocation;
-  final SearchProviderViewModel _searchProviderViewModel =
-      SearchProviderViewModel();
+  final FindProviderViewModel _searchProviderViewModel =
+      FindProviderViewModel();
   late bool _isGettingResults;
 
   List<ServiceProvider>? _providerList;
@@ -286,11 +285,11 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
           !_isGettingResults
               ? Expanded(
                   child: ListView.builder(
-                      // itemCount: _providerList!.length,
-                      itemCount: 10,
+                      itemCount: _providerList!.length,
+                      // itemCount: 10,
                       // shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        return _vItemProvider(_providerList![0]);
+                        return _vItemProvider(_providerList![index]);
                       }),
                 )
               : CircularProgressIndicator(
@@ -457,8 +456,16 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
   void _mInit() {
     _editCtrlerSearchbar = TextEditingController(text: widget.serviceCategory);
     _searchRange = 5;
-    _myLocation = "Fateyabad, Hathazari Road, Chittagong";
+    // _myLocation = "Fateyabad, Hathazari Road, Chittagong";
+    _myLocation = widget.currentLocationDetails.formattedAdress!;
     _isGettingResults = true;
+
+    logger.d("Distance is ${_searchProviderViewModel.mCalculateDistance(
+      widget.currentLocationDetails.lat!,
+      widget.currentLocationDetails.long!,
+      22.4787345,
+      91.7942796,
+    )}");
   }
 
   void _mLoad() async {
@@ -487,7 +494,7 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
         currentLocationDetails: widget.currentLocationDetails,
         serviceCategory: widget.serviceCategory,
         searchRange: widget.searchRange,
-     );
+      );
     }));
   }
 }

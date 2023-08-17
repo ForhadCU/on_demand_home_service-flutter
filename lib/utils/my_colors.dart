@@ -39,4 +39,14 @@ class MyColors {
   static const Color yelpRed = Color(0xffFF1A1A);
   static const Color yelpRedShadow1 = Color(0xffe61717);
   static const Color yelpRedTint4 = Color(0xffff8d8d);
+
+  static const Color acRepairBg = Color(0xffFFBC99);
+  static const Color paintingBg = Color(0xffB5EBCD);
+  static const Color cleaningBg = Color(0xffFFD88D);
+  static const Color beautyBg = Color(0xffCABDFF);
+  static const Color tutorBg = Color(0xffB1E5FC);
+  static const Color plumbingBg = Color(0xffCBEBA4);
+  static const Color electronicsBg = Color(0xffFB9B9B);
+  static const Color shiftingBg = Color(0xffF8B0ED);
+  static const Color barbarBg = Color(0xffAFC6FF);
 }

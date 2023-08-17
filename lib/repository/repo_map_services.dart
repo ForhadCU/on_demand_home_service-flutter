@@ -64,10 +64,35 @@ class MapServices {
 
     return results;
   }
+  Future<Map<String, dynamic>> getDirectionsByPlaceId(
+      {required String originPlaceId,required String destinationPlaceId}) async {
+    final String url =
+        'https://maps.googleapis.com/maps/api/directions/json?destination=place_id%$destinationPlaceId&origin=place_id%$originPlaceId&key=$key';
+
+    var response = await http.get(Uri.parse(url));
+
+    var json = convert.jsonDecode(response.body);
+
+    var results = {
+      'bounds_ne': json['routes'][0]['bounds']['northeast'],
+      'bounds_sw': json['routes'][0]['bounds']['southwest'],
+      'start_location': json['routes'][0]['legs'][0]['start_location'],
+      'end_location': json['routes'][0]['legs'][0]['end_location'],
+      'polyline': json['routes'][0]['overview_polyline']['points'],
+      'polyline_decoded': PolylinePoints()
+          .decodePolyline(json['routes'][0]['overview_polyline']['points'])
+    };
+
+    return results;
+  }
 
   Future<dynamic> getPlaceDetails(LatLng coords, int radius) async {
-    var lat = coords.latitude;
+/*     var lat = coords.latitude;
     var lng = coords.longitude;
+ */    var lat = 21.4693189;
+    var lng = 92.002836;
+
+
 
     final String url =
         'https://maps.googleapis.com/maps/api/place/nearbysearch/json?&location=$lat,$lng&radius=$radius&key=$key';
