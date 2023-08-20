@@ -1,13 +1,60 @@
 import 'dart:math';
 
+import 'package:thesis_project/const/constants.dart';
+import 'package:thesis_project/models/provider_dataset.dart';
 import 'package:thesis_project/models/search_provider.dart';
 import 'package:thesis_project/repository/repo_search_provider.dart';
+import 'package:thesis_project/utils/sorting.dart';
+import 'package:thesis_project/view_models/vm_map.dart';
 
 import '../models/provider.dart';
 
 class FindProviderViewModel {
-  SearchProviderRepository searchProviderRepository =
+  final SearchProviderRepository searchProviderRepository =
       SearchProviderRepository();
+  final Sorting _sorting = Sorting();
+  final MapViewModel mapViewModel = MapViewModel();
+
+  Future<List<ProviderDataset>> mGetAvailableProvidersIntoRange({
+    required List<ProviderDataset> providerDataset,
+    required double range,
+    required double consumerLat,
+    required double consumerLong,
+    required String serviceCategory,
+  }) async {
+    List<ProviderDataset> results = [];
+
+    for (var element in providerDataset) {
+      double currentProviderDistance = mCalculateDistance(
+          consumerLat, consumerLong, element.lat!, element.long!);
+      if (currentProviderDistance <= range &&
+          element.category == serviceCategory) {
+        element.liveDistance = currentProviderDistance;
+        results.add(element);
+      }
+    }
+    // c: just for loading some moments
+    await Future.delayed(const Duration(milliseconds: 1000));
+    return results;
+  }
+
+  List<ProviderDataset> mSortProvidersForMinDistance(
+      List<ProviderDataset> availableProvidersInRange) {
+    List<ProviderDataset> list = [];
+
+    /*   logger.d(
+        "Sorted by distance: ${List.generate(_sorting.quicksortForProviderMinDistance(providerDatasetList).length, (index) => _sorting.quicksortForProviderMinDistance(providerDatasetList)[index].toJson())}"); */
+
+    list = _sorting.quicksortForProviderMinDistance(availableProvidersInRange);
+    /*  for (var element
+        in _sorting.quicksortForProviderMinDistance(providerDatasetList)) {
+      logger.d(
+          "Provider Name: ${element.name} | Distance: ${element.liveDistance}");
+    } */
+
+    return list;
+  }
+
   Future<List<ServiceProvider>> mGetProviderList(
       {required double myLatitude,
       required double myLongitude,
@@ -23,29 +70,23 @@ class FindProviderViewModel {
         providerSearch: providerSearch);
   }
 
-   double mCalculateDistance(
-    double lat1,
-    double lon1,
-    double lat2,
-    double lon2,
+  double mCalculateDistance(
+    double startLat,
+    double startLong,
+    double endLat,
+    double endLong,
   ) {
-    const double earthRadius = 6371; // Earth's radius in kilometers
-
-    double dLat = _degreesToRadians(lat2 - lat1);
-    double dLon = _degreesToRadians(lon2 - lon1);
-
-    double a = pow(sin(dLat / 2), 2) +
-        cos(_degreesToRadians(lat1)) *
-            cos(_degreesToRadians(lat2)) *
-            pow(sin(dLon / 2), 2);
-
-    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    double distance = earthRadius * c;
-
-    return distance;
+    return mapViewModel.mCalculateDistanceFromLatLong(
+      startLat: startLat,
+      startLong: startLong,
+      endLat: endLat,
+      endLong: endLong,
+    );
   }
 
-  static double _degreesToRadians(double degrees) {
-    return degrees * pi / 180;
+  mSortProviderForMaxRating(List<ProviderDataset> availableProvidersIntoRange) {
+    List<ProviderDataset> list =
+        _sorting.quicksortForProviderMaxRating(availableProvidersIntoRange);
+    return list;
   }
 }

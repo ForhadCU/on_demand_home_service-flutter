@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:thesis_project/models/current_location_details.dart';
@@ -5,7 +9,9 @@ import 'package:thesis_project/repository/repo_home.dart';
 
 import '../const/constants.dart';
 import '../const/keywords.dart';
+import '../models/provider_dataset.dart';
 import '../models/reverse_geocode_loc_details.dart';
+import 'package:http/http.dart' as http;
 
 class HomeViewModel {
   final HomeRepository _homeRepository = HomeRepository();
@@ -171,13 +177,4 @@ class HomeViewModel {
     return placeName;
   }
 
-  void mGenerateProviderDataset() {
-    int randIndex = DateTime.now().microsecondsSinceEpoch % 10;
-    logger.d("RandIndex: $randIndex");
-  }
-}
-
-void main() {
-  HomeViewModel homeViewModel = HomeViewModel();
-  homeViewModel.mGenerateProviderDataset();
 }

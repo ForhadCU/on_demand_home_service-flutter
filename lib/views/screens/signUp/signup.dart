@@ -6,9 +6,11 @@ import 'package:getwidget/components/loader/gf_loader.dart';
 import 'package:getwidget/types/gf_loader_type.dart';
 import 'package:logger/logger.dart';
 import 'package:thesis_project/const/keywords.dart';
+import 'package:thesis_project/models/provider_dataset.dart';
 import 'package:thesis_project/utils/my_colors.dart';
 import 'package:thesis_project/utils/my_screensize.dart';
 import 'package:thesis_project/utils/statusbar.dart';
+import 'package:thesis_project/view_models/vm_signup.dart';
 import 'package:thesis_project/views/screens/setLocation/set_location.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -36,6 +38,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String _dropdownvalue = 'Painter';
   bool _isSubmitting = false;
   bool _isProvider = true;
+  SignUpViewModel _signUpViewModel = SignUpViewModel();
 
   @override
   void initState() {
@@ -448,13 +451,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return NeumorphicButton(
       margin:
           EdgeInsets.symmetric(horizontal: MyScreenSize.mGetWidth(context, 10)),
-      onPressed: () {
+      onPressed: () async {
         setState(() {
-          _isSubmitting = true;
           // e: Signup and Data Saving operation goes here...
-
-          _mNavigate();
+          _isSubmitting = true;
         });
+
+        // c: Generate dataset
+        List<ProviderDataset> list =
+            await _signUpViewModel.mGenerateProviderDataset();
+
+        _mNavigate(list);
       },
       style: NeumorphicStyle(
         depth: 2,
@@ -480,9 +487,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  void _mNavigate() {
+  void _mNavigate(List<ProviderDataset> list) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return SetLocationScreen();
+      return SetLocationScreen(providerDatasetList: list);
     }));
   }
 }

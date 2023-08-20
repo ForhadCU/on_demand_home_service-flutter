@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/const/keywords.dart';
 import 'package:thesis_project/models/provider.dart';
+import 'package:thesis_project/models/provider_dataset.dart';
 import 'package:thesis_project/models/servie_category.dart';
 import 'package:thesis_project/utils/custom_text.dart';
 import 'package:thesis_project/utils/my_colors.dart';
@@ -23,7 +24,11 @@ import '../../../models/food.dart';
 
 class HomeScreen extends StatefulWidget {
   final CurrentLocationDetails currentLocationDetails;
-  const HomeScreen({super.key, required this.currentLocationDetails});
+  final List<ProviderDataset> providerDatasetList;
+  const HomeScreen(
+      {super.key,
+      required this.currentLocationDetails,
+      required this.providerDatasetList});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -60,10 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: MyColors.caribbeanGreenTint7.withOpacity(1),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              // _mOnClickSearchBtn();
-
-              // e: test
-              
+              _mOnClickSearchBtn();
             },
             shape: CircleBorder(),
             backgroundColor: MyColors.spaceCadetTint1,
@@ -805,7 +807,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _mManageLocationReq() async {
-
     /* _currentLocationDetails =
         await _homeViewModel.mManageLocAccessAndFetchCurrentPos(); */
     logger.d(
@@ -882,18 +883,22 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       logger.d(
           "My lat: ${_currentLocationDetails!.lat}, My long: ${_currentLocationDetails!.long}, My place: ${_currentLocationDetails!.formattedAdress}");
-
+      logger.d("length: ${widget.providerDatasetList.length}");
       return FindProviderScreen(
         currentLocationDetails: _currentLocationDetails!,
-        serviceCategory: acRepair,
-        searchRange: 2,
+        // e: need service cat
+        serviceCategory: shifting,
+        searchRange: 5,
+        providerDatasetList: widget.providerDatasetList,
       );
     }));
   }
 
   void _vAction() {
+    /* 
     Navigator.push(context, MaterialPageRoute(builder: ((context) {
       return ProviderProfileScreen();
     })));
+   */
   }
 }

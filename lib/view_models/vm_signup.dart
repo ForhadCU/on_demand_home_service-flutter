@@ -1,29 +1,23 @@
-// ignore_for_file: avoid_print
-
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:thesis_project/const/constants.dart';
-import 'package:thesis_project/const/keywords.dart';
-import 'package:thesis_project/models/provider_dataset.dart';
 import 'package:http/http.dart' as http;
 
-void main(List<String> args) {
-  Test test = Test();
+import '../const/constants.dart';
+import '../const/keywords.dart';
+import '../models/provider_dataset.dart';
 
-  test.mGenerateProviderDataset();
-}
-
-class Test {
-  void mGenerateProviderDataset() async {
+class SignUpViewModel {
+  Future<List<ProviderDataset>> mGenerateProviderDataset() async {
     List<ProviderDataset> providerDatasetList = [];
-    for (int i = 1; i <= 100; i++) {
+    for (int i = 1; i <= 35; i++) {
       providerDatasetList.add(
         ProviderDataset(
           name: "Provider ${i.toString().padLeft(3, '0')}",
           category: _mGetRandCategory(),
-          imgUri: null /* await _mGetRandImageUri() */,
+          imgUri: await _mGetRandImageUri(),
+          // imgUri: null,
           rating: _mGetRandRating(),
           monthlyRating: _mGetRandMonthlyRating(),
           numOfReview: _mGenerateRandomNum(max: 150, min: 1),
@@ -45,11 +39,14 @@ class Test {
     print("DataType of result is : ${jsonResult.runtimeType}");
     print("Results: $jsonResult");
 
+
     // c: Save this List of map to a json file
-    mSaveGeneratedDataset(jsonResult);
+    _mSaveGeneratedDataset(jsonResult);
+
+    return providerDatasetList;
   }
 
-  void mSaveGeneratedDataset(List<Map<String, dynamic>> jsonResult) {
+  void _mSaveGeneratedDataset(List<Map<String, dynamic>> jsonResult) {
     // c: create a json file
     File outputFile = File('output.json');
 

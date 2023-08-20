@@ -319,12 +319,12 @@ class _BookingsScreenState extends State<BookingsScreen> {
     );
   }
 
-  void _mAction(Booking booking) {
+  void _mAction(Booking booking) {/* 
     // e: get providers full details with providerId
     // launchUrl(Uri.parse("tel://01819692172"));
     // c: Goto Provider Profile
      Navigator.push(context, MaterialPageRoute(builder: (context) {
       return ProviderProfileScreen();
     }));
-  }
+  */ }
 }

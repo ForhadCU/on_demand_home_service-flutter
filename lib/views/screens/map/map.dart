@@ -6,7 +6,6 @@ import 'dart:ui' as ui;
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -17,20 +16,24 @@ import 'package:logger/logger.dart';
 import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/const/keywords.dart';
 import 'package:thesis_project/models/provider.dart';
+import 'package:thesis_project/utils/constants.dart';
 import 'package:thesis_project/utils/my_colors.dart';
 import 'package:thesis_project/views/screens/profile/scr_provider_profile.dart';
 
 import '../../../models/auto_complete_result.dart';
 import '../../../models/current_location_details.dart';
+import '../../../models/provider_dataset.dart';
 import '../../../repository/repo_map_services.dart';
 import '../../../repository/repo_search_places.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   final CurrentLocationDetails currentLocationDetails;
   final String serviceCategory;
-  final int searchRange;
+  final double searchRange;
+  final List<ProviderDataset> providerDataSetList;
   const MapScreen(
-      {required this.currentLocationDetails,
+      {required this.providerDataSetList,
+      required this.currentLocationDetails,
       required this.serviceCategory,
       required this.searchRange,
       Key? key})
@@ -64,7 +67,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
   int markerIdCounter = 1;
   int polylineIdCounter = 1;
 
-  var radiusValue = 3000.0;
+  var radiusValue;
 
   var tappedPoint;
 
@@ -83,8 +86,6 @@ class _HomePageState extends ConsumerState<MapScreen> {
   bool isReviews = true;
   bool isPhotos = false;
 
-  final key = '<AIzaSyAo215TRl_Nkdp1t0m48C6rda_c9vRD_E4>';
-
   var selectedPlaceDetails;
 
 //Circle
@@ -98,85 +99,12 @@ class _HomePageState extends ConsumerState<MapScreen> {
 //Initial map position on load
   static late CameraPosition _kGooglePlex;
 
-  late ServiceProvider tappedProviderDetails;
-
- /*  List<ServiceProvider> providerList = [
-  ServiceProvider(
-    name: "Ashraful Islam",
-    category: tutor,
-    imgUri: "assets/images/provider1.jpg",
-    rating: 4.8,
-    numOfReview: 120,
-    serviceFee: 450,
-    location: "Chittagong University Road, Chittagong",
-    lat: 22.4787345,
-    long: 91.7942796,
-    phone: "01819682374",
-  ),
-  ServiceProvider(
-    name: "Karimul Haque",
-    category: paintings,
-    imgUri: "assets/images/provider6.jpeg",
-    rating: 3.5,
-    numOfReview: 120,
-    location: "Chikandandi, Chittagong",
-    serviceFee: 450,
-    lat: 22.4481407,
-    long: 91.8224547,
-    phone: "01819682374",
-  ),
-  ServiceProvider(
-    name: "Ahsan Ullah",
-    category: acRepair,
-    imgUri: "assets/images/provider1.jpg",
-    rating: 4.8,
-    numOfReview: 120,
-    serviceFee: 450,
-    location: "Aman Bazaar, N106, Chittagong",
-    lat: 22.4213714,
-    long: 91.82010129999999,
-    phone: "01819682374",
-  ),
-  ServiceProvider(
-    name: "Diponkor Sheik",
-    category: shifting,
-    imgUri: "assets/images/provider4.jpeg",
-    rating: 3.5,
-    numOfReview: 120,
-    location: "Baluchara, Chittagong",
-    serviceFee: 450,
-    lat: 22.4090162,
-    long: 91.8178341,
-    phone: "01819682374",
-  ),
-  ServiceProvider(
-    name: "Shariful Rahman",
-    category: shifting,
-    imgUri: "assets/images/provider4.jpeg",
-    rating: 3.5,
-    numOfReview: 120,
-    location: "Jobra, Chittagong",
-    serviceFee: 450,
-    lat: 22.4875834,
-    long: 91.8098954,
-    phone: "01819682374",
-  ),
-  ServiceProvider(
-    name: "Maruf Kabir",
-    category: shifting,
-    imgUri: "assets/images/provider4.jpeg",
-    rating: 3.5,
-    numOfReview: 120,
-    location: "Baluchora, Chittagong",
-    serviceFee: 450,
-    lat: 21.4637269,
-    long: 91.9915908,
-    phone: "01819682374",
-  ),
-]; */
+  // late ServiceProvider tappedProviderDetails;
+  late ProviderDataset tappedProviderDetails;
 
   @override
   void initState() {
+    _mInit();
     _mInitOperation();
     super.initState();
   }
@@ -509,7 +437,8 @@ class _HomePageState extends ConsumerState<MapScreen> {
                           child: PageView.builder(
                               controller: _pageController,
                               // itemCount: allFavoritePlaces.length,
-                              itemCount: providerList.length,
+                              // itemCount: widget.providerDataSetList.length,
+                              itemCount: widget.providerDataSetList.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return _nearbyPlacesList(index);
                               }),
@@ -547,7 +476,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
                                             : 'https://pic.onlinewebfonts.com/svg/img_546302.png'),
                                         fit: BoxFit.cover), */
                                         image: DecorationImage(
-                                            image: AssetImage(
+                                            image: NetworkImage(
                                                 tappedProviderDetails.imgUri!),
                                             fit: BoxFit.fill),
                                       ),
@@ -850,13 +779,17 @@ class _HomePageState extends ConsumerState<MapScreen> {
       markerIcon =
           await getBytesFromAsset('assets/mapicons/local-services.png', 75);
     } else if (types == paintings) {
-      markerIcon = await getBytesFromAsset('assets/mapicons/local-services.png', 75);
+      markerIcon =
+          await getBytesFromAsset('assets/mapicons/local-services.png', 75);
     } else if (types == electronics) {
-      markerIcon = await getBytesFromAsset('assets/mapicons/local-services.png', 75);
+      markerIcon =
+          await getBytesFromAsset('assets/mapicons/local-services.png', 75);
     } else if (types == cleaning) {
-      markerIcon = await getBytesFromAsset('assets/mapicons/local-services.png', 75);
+      markerIcon =
+          await getBytesFromAsset('assets/mapicons/local-services.png', 75);
     } else if (types == beauty) {
-      markerIcon = await getBytesFromAsset('assets/mapicons/local-services.png', 75);
+      markerIcon =
+          await getBytesFromAsset('assets/mapicons/local-services.png', 75);
     } else if (types == plumbing) {
       markerIcon =
           await getBytesFromAsset('assets/mapicons/local-services.png', 75);
@@ -870,7 +803,8 @@ class _HomePageState extends ConsumerState<MapScreen> {
       markerIcon =
           await getBytesFromAsset('assets/mapicons/local-services.png', 75);
     } else {
-      markerIcon = await getBytesFromAsset('assets/mapicons/local-services.png', 75);
+      markerIcon =
+          await getBytesFromAsset('assets/mapicons/local-services.png', 75);
     }
 
     final Marker marker = Marker(
@@ -902,7 +836,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
       photoGalleryIndex = 1;
       showBlankCard = false;
       goToTappedPlace();
-      fetchImage();
+      // fetchImage();
     }
   }
 
@@ -923,7 +857,47 @@ class _HomePageState extends ConsumerState<MapScreen> {
 
   // _buildReviewItem(review) {
   _buildReviewItem() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _vMockReviews(
+              reviewerName: "User 039",
+              ratings: 3.4,
+              reviewText:
+                  "The service is smooth and straightforward. My advisor was helpful",
+              imageUri: "assets/images/provider4.jpeg"),
+          _vMockReviews(
+              reviewerName: "User 021",
+              ratings: 4.5,
+              reviewText:
+                  "My provider was helpful. The service is smooth and straightforward. I would recommend deal direct",
+              imageUri: "assets/images/provider1.jpg"),
+          _vMockReviews(
+              reviewerName: "User 034",
+              ratings: 3.4,
+              reviewText:
+                  "I would recommend deal direct. The service is smooth and straightforward.",
+              imageUri: "assets/images/provider3.jpeg"),
+          _vMockReviews(
+              reviewerName: "User 028",
+              ratings: 4.9,
+              reviewText:
+                  "My provider was helpful. The service is smooth and straightforward. I would recommend deal direct",
+              imageUri: "assets/images/provider5.jpg"),
+        ],
+      ),
+    );
+  }
+
+  _vMockReviews({
+    required String reviewerName,
+    required double ratings,
+    required String reviewText,
+    required String imageUri,
+  }) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
@@ -939,8 +913,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
                       fit: BoxFit.cover), */
 
                   image: DecorationImage(
-                      image: AssetImage("assets/images/provider7.jpeg"),
-                      fit: BoxFit.fill),
+                      image: AssetImage(imageUri), fit: BoxFit.fill),
                 ),
               ),
               SizedBox(width: 4.0),
@@ -949,7 +922,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
                   width: 160.0,
                   child: Text(
                     // review['author_name'],
-                    "Author Name",
+                    reviewerName,
                     style: TextStyle(
                         fontFamily: 'WorkSans',
                         fontSize: 12.0,
@@ -959,7 +932,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
                 SizedBox(height: 3.0),
                 RatingStars(
                   // value: review['rating'] * 1.0,
-                  value: 4.7,
+                  value: ratings,
                   starCount: 5,
                   starSize: 7,
                   valueLabelColor: const Color(0xff9b9b9b),
@@ -979,7 +952,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
                       const EdgeInsets.symmetric(vertical: 1, horizontal: 4),
                   valueLabelMargin: const EdgeInsets.only(right: 4),
                   starOffColor: const Color(0xffe7e8ea),
-                  starColor: Colors.yellow,
+                  starColor: Colors.amber.shade800,
                 )
               ])
             ],
@@ -990,7 +963,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
           child: Container(
             child: Text(
               // review['text'],
-              "This is review text",
+              reviewText,
               style: TextStyle(
                   fontFamily: 'WorkSans',
                   fontSize: 11.0,
@@ -998,7 +971,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
             ),
           ),
         ),
-        Divider(color: Colors.grey.shade600, height: 1.0)
+        Divider(color: Colors.black26, height: 1.0)
       ],
     );
   }
@@ -1033,7 +1006,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
                   borderRadius: BorderRadius.circular(10.0),
                   image: DecorationImage(
                       image: NetworkImage(
-                          'https://maps.googleapis.com/maps/api/place/photo?maxwidth=$maxWidth&maxheight=$maxHeight&photo_reference=$placeImg&key=$key'),
+                          'https://maps.googleapis.com/maps/api/place/photo?maxwidth=$maxWidth&maxheight=$maxHeight&photo_reference=$placeImg&key=${MyConstants.googleApiKey}'),
                       fit: BoxFit.cover))),
           SizedBox(height: 10.0),
           Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
@@ -1129,17 +1102,19 @@ class _HomePageState extends ConsumerState<MapScreen> {
 
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
         target: LatLng(
-            providerList[_pageController.page!.toInt()]
-                    .lat! + 0.0125,
-            providerList[_pageController.page!.toInt()].long! +
+            widget.providerDataSetList[_pageController.page!.toInt()].lat! +
+                0.0125,
+            widget.providerDataSetList[_pageController.page!.toInt()].long! +
                 0.005)
-                /* LatLng(
+        /* LatLng(
+          
             allFavoritePlaces[_pageController.page!.toInt()]['geometry']
                     ['location']['lat'] +
                 0.0125,
             allFavoritePlaces[_pageController.page!.toInt()]['geometry']
                     ['location']['lng'] +
-                0.005) */,
+                0.005) */
+        ,
         zoom: 14.0,
         bearing: 45.0,
         tilt: 45.0)));
@@ -1169,7 +1144,8 @@ class _HomePageState extends ConsumerState<MapScreen> {
           if (cardTapped) {
             /* tappedPlaceDetail = await MapServices()
                 .getPlaceById(allFavoritePlaces[index]['place_id']); */
-            tappedProviderDetails = providerList[index];
+            // tappedProviderDetails = widget.providerDataSetList[index];
+            tappedProviderDetails = widget.providerDataSetList[index];
             setState(() {});
           }
           moveCameraSlightly();
@@ -1215,7 +1191,8 @@ class _HomePageState extends ConsumerState<MapScreen> {
                                             : 'https://pic.onlinewebfonts.com/svg/img_546302.png'),
                                         fit: BoxFit.cover), */
                           image: DecorationImage(
-                              image: AssetImage(providerList[index].imgUri!),
+                              image: NetworkImage(
+                                  widget.providerDataSetList[index].imgUri!),
                               fit: BoxFit.cover),
                         ),
                       ),
@@ -1238,7 +1215,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
                           Container(
                             width: 170.0,
                             // child: Text(allFavoritePlaces[index]['name'],
-                            child: Text(providerList[index].name!,
+                            child: Text(widget.providerDataSetList[index].name!,
                                 style: TextStyle(
                                     fontSize: 12.5,
                                     fontFamily: 'WorkSans',
@@ -1246,10 +1223,10 @@ class _HomePageState extends ConsumerState<MapScreen> {
                           ),
                           RatingStars(
                             value:
-                                /* providerList[index].rating!.runtimeType == int
+                                /* widget.providerDataSetList[index].rating!.runtimeType == int
                                     ? allFavoritePlaces[index]['rating'] * 1.0
                                     : allFavoritePlaces[index]['rating'] ?? 0.0, */
-                                providerList[index].rating!,
+                                widget.providerDataSetList[index].rating!,
                             starCount: 5,
                             starSize: 10,
                             valueLabelColor: const Color(0xff9b9b9b),
@@ -1276,7 +1253,8 @@ class _HomePageState extends ConsumerState<MapScreen> {
                             child: Text(
                               /* allFavoritePlaces[index]['business_status'] ??
                                   'none', */
-                              "Distance : 5 km",
+                              // "Distance : 5 km",
+                              "${widget.providerDataSetList[index].liveDistance!.toStringAsFixed(2)} km",
                               style: TextStyle(
                                   /* color: allFavoritePlaces[index]
                                               ['business_status'] ==
@@ -1307,7 +1285,8 @@ class _HomePageState extends ConsumerState<MapScreen> {
     _markers = {};
 
     // var selectedPlace = allFavoritePlaces[_pageController.page!.toInt()];
-    var selectedProvider = providerList[_pageController.page!.toInt()];
+    var selectedProvider =
+        widget.providerDataSetList[_pageController.page!.toInt()];
 
     _setNearMarker(
       LatLng(selectedProvider.lat!, selectedProvider.long!),
@@ -1450,17 +1429,18 @@ class _HomePageState extends ConsumerState<MapScreen> {
 
   Future<void> _mDisplayAvailableUsers() async {
     // e: need to get available user details
-    var placesResult =
+    /*    var placesResult =
         await MapServices().getPlaceDetails(tappedPoint, radiusValue.toInt());
 
     List<dynamic> placesWithin = placesResult['results'] as List;
 
-    logger.d("PlaceDetails: $placesWithin");
+    // logger.d("PlaceDetails: $placesWithin");
 
-    allFavoritePlaces = placesWithin;
-    // allFavoritePlaces = providerList;
+    // allFavoritePlaces = placesWithin;
+    // allFavoritePlaces = widget.providerDataSetList;
 
-    tokenKey = placesResult['next_page_token'] ?? 'none';
+
+    tokenKey = placesResult['next_page_token'] ?? 'none'; */
     _markers = {
       Marker(
           markerId: MarkerId('marker_id'),
@@ -1472,15 +1452,15 @@ class _HomePageState extends ConsumerState<MapScreen> {
     };
 
     /* for (var element in placesWithin) {
-      // for (var element in providerList) {
+      // for (var element in widget.providerDataSetList) {
       _setNearMarker(
         /* LatLng(element['geometry']['location']['lat'],
             element['geometry']['location']['lng']), */
         LatLng(widget.currentLocationDetails.lat!,
             widget.currentLocationDetails.long!),
         // element['name'],
-        providerList[0].name!,
-        providerList[0].category!,
+        widget.providerDataSetList[0].name!,
+        widget.providerDataSetList[0].category!,
         // element['types'],
         'not available',
       );
@@ -1491,16 +1471,42 @@ class _HomePageState extends ConsumerState<MapScreen> {
           element.id ?? "Not available");
       logger.d("Elelments: ${element.toJson()}"); */
     } */
-    for (var i = 0; i < providerList.length; i++) {
+    /*  for (var i = 0; i < widget.providerDataSetList.length; i++) {
       _setNearMarker(
-        LatLng(providerList[i].lat!, providerList[i].long!),
+        LatLng(widget.providerDataSetList[i].lat!, widget.providerDataSetList[i].long!),
         // LatLng(allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lat'],
         //     allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lng']),
-        providerList[i].name!,
-        providerList[i].category!,
+        widget.providerDataSetList[i].name!,
+        widget.providerDataSetList[i].category!,
         // element['types'],
         'not available',
       );
+    } */
+    for (var i = 0; i < widget.providerDataSetList.length; i++) {
+      if (i%2 == 0) {
+        _setNearMarker(
+        LatLng(widget.providerDataSetList[i].lat! ,
+            widget.providerDataSetList[i].long! ),
+        // LatLng(allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lat'],
+        //     allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lng']),
+        widget.providerDataSetList[i].name!,
+        widget.providerDataSetList[i].category!,
+        // element['types'],
+        'not available',
+      );
+      } else{
+        _setNearMarker(
+        LatLng(widget.providerDataSetList[i].lat! ,
+            widget.providerDataSetList[i].long! ),
+        // LatLng(allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lat'],
+        //     allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lng']),
+        widget.providerDataSetList[i].name!,
+        widget.providerDataSetList[i].category!,
+        // element['types'],
+        'not available',
+      );
+      }
+      
     }
     _markersDupe = _markers;
     pressedNear = true;
@@ -1526,7 +1532,9 @@ class _HomePageState extends ConsumerState<MapScreen> {
 
   void _mGotoProfile() {
     Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-      return ProviderProfileScreen();
+      return ProviderProfileScreen(
+        providerDataset: tappedProviderDetails,
+      );
     })));
   }
 
@@ -1553,4 +1561,83 @@ class _HomePageState extends ConsumerState<MapScreen> {
         directions['bounds_sw']);
     _setPolyline(directions['polyline_decoded']);
   }
+
+  void _mInit() {
+    radiusValue = widget.searchRange * 1000;
+  }
 }
+
+/*  List<ServiceProvider> widget.providerDataSetList = [
+  ServiceProvider(
+    name: "Ashraful Islam",
+    category: tutor,
+    imgUri: "assets/images/provider1.jpg",
+    rating: 4.8,
+    numOfReview: 120,
+    serviceFee: 450,
+    location: "Chittagong University Road, Chittagong",
+    lat: 22.4787345,
+    long: 91.7942796,
+    phone: "01819682374",
+  ),
+  ServiceProvider(
+    name: "Karimul Haque",
+    category: paintings,
+    imgUri: "assets/images/provider6.jpeg",
+    rating: 3.5,
+    numOfReview: 120,
+    location: "Chikandandi, Chittagong",
+    serviceFee: 450,
+    lat: 22.4481407,
+    long: 91.8224547,
+    phone: "01819682374",
+  ),
+  ServiceProvider(
+    name: "Ahsan Ullah",
+    category: acRepair,
+    imgUri: "assets/images/provider1.jpg",
+    rating: 4.8,
+    numOfReview: 120,
+    serviceFee: 450,
+    location: "Aman Bazaar, N106, Chittagong",
+    lat: 22.4213714,
+    long: 91.82010129999999,
+    phone: "01819682374",
+  ),
+  ServiceProvider(
+    name: "Diponkor Sheik",
+    category: shifting,
+    imgUri: "assets/images/provider4.jpeg",
+    rating: 3.5,
+    numOfReview: 120,
+    location: "Baluchara, Chittagong",
+    serviceFee: 450,
+    lat: 22.4090162,
+    long: 91.8178341,
+    phone: "01819682374",
+  ),
+  ServiceProvider(
+    name: "Shariful Rahman",
+    category: shifting,
+    imgUri: "assets/images/provider4.jpeg",
+    rating: 3.5,
+    numOfReview: 120,
+    location: "Jobra, Chittagong",
+    serviceFee: 450,
+    lat: 22.4875834,
+    long: 91.8098954,
+    phone: "01819682374",
+  ),
+  ServiceProvider(
+    name: "Maruf Kabir",
+    category: shifting,
+    imgUri: "assets/images/provider4.jpeg",
+    rating: 3.5,
+    numOfReview: 120,
+    location: "Baluchora, Chittagong",
+    serviceFee: 450,
+    lat: 21.4637269,
+    long: 91.9915908,
+    phone: "01819682374",
+  ),
+]; */

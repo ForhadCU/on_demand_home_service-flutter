@@ -12,21 +12,24 @@ class ProviderDataset {
   String? phone;
   List<Jobs>? jobs;
   int? activePeriod;
+  double? liveDistance;
 
-  ProviderDataset(
-      {required this.name,
-      required this.category,
-      required this.imgUri,
-      required this.rating,
-      required this.monthlyRating,
-      required this.numOfReview,
-      required this.serviceFee,
-      required this.location,
-      required this.lat,
-      required this.long,
-      required this.phone,
-      required this.jobs,
-      required this.activePeriod});
+  ProviderDataset({
+    required this.name,
+    required this.category,
+    required this.imgUri,
+    required this.rating,
+    required this.monthlyRating,
+    required this.numOfReview,
+    required this.serviceFee,
+    required this.location,
+    required this.lat,
+    required this.long,
+    required this.phone,
+    required this.jobs,
+    required this.activePeriod,
+    required this.liveDistance,
+  });
 
   ProviderDataset.fromJson(Map<String, dynamic> json) {
     name = json['name'];
@@ -47,6 +50,7 @@ class ProviderDataset {
       });
     }
     activePeriod = json['active_period'];
+    liveDistance = json['liveDistance'];
   }
 
   Map<String, dynamic> toJson() {
@@ -62,6 +66,7 @@ class ProviderDataset {
     data['lat'] = lat;
     data['long'] = long;
     data['phone'] = phone;
+    data['liveDistance'] = liveDistance;
     if (jobs != null) {
       data['jobs'] = jobs!.map((v) => v.toJson()).toList();
     }

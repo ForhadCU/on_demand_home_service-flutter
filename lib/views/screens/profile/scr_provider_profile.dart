@@ -1,24 +1,19 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'dart:developer';
-
 import 'package:date_picker_timeline/date_picker_timeline.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:thesis_project/const/constants.dart';
-import 'package:thesis_project/const/keywords.dart';
+import 'package:thesis_project/models/provider_dataset.dart';
 import 'package:thesis_project/models/working_hour.dart';
 import 'package:thesis_project/utils/my_colors.dart';
 import 'package:thesis_project/utils/my_screensize.dart';
 import 'package:thesis_project/utils/statusbar.dart';
 
-import '../../widgets/custom_painter.dart';
-
 class ProviderProfileScreen extends StatefulWidget {
-  final ServiceProtocolInfo? serviceProviderInfo;
-  const ProviderProfileScreen({super.key,  this.serviceProviderInfo});
+  final ProviderDataset? providerDataset;
+
+  const ProviderProfileScreen({super.key, required this.providerDataset});
 
   @override
   State<ProviderProfileScreen> createState() => ProviderProfileScreenState();
@@ -29,9 +24,11 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
   late DatePickerController _datePickerController;
   late List<DateTime> selectedDateList;
   int _selectedHour = 1;
+  late ProviderDataset _providerDataset;
   @override
   void initState() {
     super.initState();
+    _providerDataset = widget.providerDataset!;
     _datePickerController = DatePickerController();
     selectedDateList = [];
     var today = DateTime.now();
@@ -47,7 +44,7 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    uCustomStatusBar(statusBarColor: Colors.transparent);
+    uCustomStatusBar(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.light);
 
     return Scaffold(
       backgroundColor: MyColors.caribbeanGreenTint7,
@@ -80,18 +77,20 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
                 ),
                 // child: Image(image: AssetImage("assets/images/provider1.jpg",), fit: BoxFit.fill,),
                 child: CircleAvatar(
-                  foregroundImage: AssetImage("assets/images/provider4.jpeg"),
+                  // foregroundImage: AssetImage("assets/images/provider4.jpeg"),
+                  foregroundImage:
+                      NetworkImage(_providerDataset.imgUri!),
                 )),
           ),
           // v: Name and Rating
           Positioned(
             top: MyScreenSize.mGetHeight(context, 34),
-            left: 5,
+            left: 8,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Service Provider Name",
+                  _providerDataset.name!,
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 22,
@@ -108,7 +107,7 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    "Cleaning",
+                    _providerDataset.category!,
                     style: TextStyle(
                       color: MyColors.spaceCadetTint2,
                     ),
@@ -118,8 +117,11 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
                   height: 12,
                 ),
                 RatingStars(
-                  value: 4,
+                  value: _providerDataset.rating!,
                   starSize: 14,
+                  starColor: Colors.amber.shade800,
+                  valueLabelColor: Colors.black26,
+                  starOffColor: Colors.black26,
                 ),
               ],
             ),
@@ -261,7 +263,7 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
                                   ),
                                 ),
                                 Text(
-                                  "350 Tk/hr",
+                                  "${_providerDataset.serviceFee} Tk/hr",
                                   style: TextStyle(
                                     // color: MyColors.caribbeanGreen,
                                     fontWeight: FontWeight.w500,

@@ -8,6 +8,7 @@ import 'package:getwidget/getwidget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/models/current_location_details.dart';
+import 'package:thesis_project/models/provider_dataset.dart';
 import 'package:thesis_project/utils/custom_text.dart';
 import 'package:thesis_project/utils/my_colors.dart';
 import 'package:thesis_project/utils/my_screensize.dart';
@@ -20,7 +21,8 @@ import '../../../repository/repo_search_places.dart';
 import '../../../view_models/vm_set_location.dart';
 
 class SetLocationScreen extends ConsumerStatefulWidget {
-  const SetLocationScreen({super.key});
+  final List<ProviderDataset> providerDatasetList;
+  const SetLocationScreen({required this.providerDatasetList, super.key});
 
   @override
   _SetLocationScreenState createState() => _SetLocationScreenState();
@@ -460,6 +462,7 @@ class _SetLocationScreenState extends ConsumerState<SetLocationScreen> {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return HomeScreen(
         currentLocationDetails: currentLocationDetails,
+      providerDatasetList:  widget.providerDatasetList
       );
     }));
   }
