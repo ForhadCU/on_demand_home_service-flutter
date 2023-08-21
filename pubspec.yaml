@@ -40,6 +40,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_animate: ^4.2.0+1
+  flutter_colorpicker: ^1.0.3
   flutter_neumorphic: ^3.2.0
   flutter_polyline_points: ^1.0.0
   flutter_rating_stars: ^1.0.3+4

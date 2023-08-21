@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thesis_project/views/screens/signUp/signup.dart';
+import 'package:thesis_project/views/signIn/scr.sign_in.dart';
 
 void main() {
   mConfigureFlutter();
@@ -28,9 +29,9 @@ class MyApp extends StatelessWidget {
         // brightness: Brightness.dark
       ),
       // home: const HomePage(),
-      home: const SignUpScreen(),
+      // home: const SignUpScreen(),
+      home: SignInScreen(),
     );
-    
   }
 }
 

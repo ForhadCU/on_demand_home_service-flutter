@@ -1483,7 +1483,6 @@ class _HomePageState extends ConsumerState<MapScreen> {
       );
     } */
     for (var i = 0; i < widget.providerDataSetList.length; i++) {
-      if (i%2 == 0) {
         _setNearMarker(
         LatLng(widget.providerDataSetList[i].lat! ,
             widget.providerDataSetList[i].long! ),
@@ -1494,18 +1493,6 @@ class _HomePageState extends ConsumerState<MapScreen> {
         // element['types'],
         'not available',
       );
-      } else{
-        _setNearMarker(
-        LatLng(widget.providerDataSetList[i].lat! ,
-            widget.providerDataSetList[i].long! ),
-        // LatLng(allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lat'],
-        //     allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lng']),
-        widget.providerDataSetList[i].name!,
-        widget.providerDataSetList[i].category!,
-        // element['types'],
-        'not available',
-      );
-      }
       
     }
     _markersDupe = _markers;
