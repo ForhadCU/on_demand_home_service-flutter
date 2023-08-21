@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-class MyDateForamt {
+class MyDateFormat {
   //c: day/month/year
   static mFormateDate(DateTime d) {
     return DateFormat('dd/MM/yyyy').format(d);

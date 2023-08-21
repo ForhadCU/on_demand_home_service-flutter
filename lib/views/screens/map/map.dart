@@ -307,7 +307,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
                             children: [
                               Expanded(
                                   child: Slider(
-                                      max: 7000.0,
+                                      max: 50000,
                                       min: 1000.0,
                                       value: radiusValue,
                                       onChanged: (newVal) {
@@ -830,6 +830,7 @@ class _HomePageState extends ConsumerState<MapScreen> {
   }
 
   void _onScroll() {
+    logger.w("Called");
     if (_pageController.page!.toInt() != prevPage) {
       prevPage = _pageController.page!.toInt();
       cardTapped = false;
@@ -1284,6 +1285,8 @@ class _HomePageState extends ConsumerState<MapScreen> {
 
     _markers = {};
 
+    logger.w(_pageController.page!.toInt());
+
     // var selectedPlace = allFavoritePlaces[_pageController.page!.toInt()];
     var selectedProvider =
         widget.providerDataSetList[_pageController.page!.toInt()];
@@ -1483,9 +1486,31 @@ class _HomePageState extends ConsumerState<MapScreen> {
       );
     } */
     for (var i = 0; i < widget.providerDataSetList.length; i++) {
+      /* if (i % 2 == 0) {
         _setNearMarker(
-        LatLng(widget.providerDataSetList[i].lat! ,
-            widget.providerDataSetList[i].long! ),
+          LatLng(22.4581407 + double.parse("0.00$i"), 91.8024547 + double.parse("0.0$i")),
+          // LatLng(allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lat'],
+          //     allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lng']),
+          widget.providerDataSetList[i].name!,
+          widget.providerDataSetList[i].category!,
+          // element['types'],
+          'not available',
+        );
+      } else {
+        _setNearMarker(
+          LatLng(widget.providerDataSetList[i].lat!,
+              widget.providerDataSetList[i].long!),
+          // LatLng(allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lat'],
+          //     allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lng']),
+          widget.providerDataSetList[i].name!,
+          widget.providerDataSetList[i].category!,
+          // element['types'],
+          'not available',
+        );
+      } */
+      _setNearMarker(
+        LatLng(widget.providerDataSetList[i].lat!,
+            widget.providerDataSetList[i].long!),
         // LatLng(allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lat'],
         //     allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lng']),
         widget.providerDataSetList[i].name!,
@@ -1493,8 +1518,34 @@ class _HomePageState extends ConsumerState<MapScreen> {
         // element['types'],
         'not available',
       );
-      
     }
+    /* for (var i = 0; i < providerList.length; i++) {
+      if (i == 0) {
+           _setNearMarker(
+        LatLng(29.578792360818773 ,
+           34.79682897786998),
+        // LatLng(allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lat'],
+        //     allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lng']),
+        providerList[i].name!,
+        providerList[i].category!,
+        // element['types'],
+        'not available',
+      );
+      } else {
+           _setNearMarker(
+        LatLng(providerList[i].lat! ,
+            providerList[i].long! ),
+        // LatLng(allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lat'],
+        //     allFavoritePlaces[allFavoritePlaces.length - i]['geometry']['location']['lng']),
+        providerList[i].name!,
+        providerList[i].category!,
+        // element['types'],
+        'not available',
+      );
+      }
+     
+       
+    }*/
     _markersDupe = _markers;
     pressedNear = true;
     // setState(() {});

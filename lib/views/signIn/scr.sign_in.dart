@@ -1,11 +1,21 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/utils/my_colors.dart';
+import 'package:thesis_project/utils/statusbar.dart';
+import 'package:thesis_project/view_models/vm_common.dart';
+import 'package:thesis_project/view_models/vm_singin.dart';
+import 'package:thesis_project/views/screens/home/home.dart';
+import 'package:thesis_project/views/screens/setLocation/set_location.dart';
+import 'package:thesis_project/views/screens/signUp/signup.dart';
 import 'package:thesis_project/views/signIn/widgets/top_bar.dart';
 
+import '../../const/keywords.dart';
+import '../../models/provider_dataset.dart';
 import '../../utils/theme_configurator.dart';
 
 class SignInScreen extends StatelessWidget {
@@ -38,16 +48,25 @@ class _Page extends StatefulWidget {
 enum Gender { MALE, FEMALE, NON_BINARY }
 
 class __PageState extends State<_Page> {
-  String firstName = "";
-  String lastName = "";
+  String username = "";
+  String pass = "";
   double age = 12;
   late Gender gender;
   Set<String> rides = Set();
 
   bool isRememberd = false;
 
+  var _isSigning = false;
+
+  var _signInViewModel = SignInViewModel();
+  var _commonViewModel = CommonViewmodel();
+
   @override
   Widget build(BuildContext context) {
+    uCustomStatusBar(
+      statusBarColor: MyColors.caribbeanGreenTint7,
+      statusBarBrightness: Brightness.dark,
+    );
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.caribbeanGreenTint7,
@@ -79,11 +98,16 @@ class __PageState extends State<_Page> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: NeumorphicButton(
-                        onPressed: _isButtonEnabled() ? () {} : null,
+                        onPressed: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return SignUpScreen();
+                          }));
+                        },
                         padding:
                             EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                         style: NeumorphicStyle(
-                            color: MyColors.caribbeanGreenTint7),
+                            depth: 0, color: MyColors.caribbeanGreenTint7),
                         child: Text(
                           "Sign Up",
                           style: TextStyle(fontWeight: FontWeight.w800),
@@ -94,59 +118,171 @@ class __PageState extends State<_Page> {
                     SizedBox(
                       height: 8,
                     ),
-                    _TextField(
-                      label: "Email",
-                      hint: "",
-                      onChanged: (firstName) {
-                        setState(() {
-                          this.firstName = firstName;
-                        });
-                      },
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Username",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Neumorphic(
+                          // padding: EdgeInsets.all(8),
+                          style: NeumorphicStyle(
+                            shape: NeumorphicShape.concave,
+                            boxShape: NeumorphicBoxShape.roundRect(
+                                BorderRadius.circular(24)),
+                            depth: -4,
+                            intensity: 0.8,
+                            // color: MyColors.caribbeanGreenTint7,
+                            color: Colors.white,
+                          ),
+                          child: TextFormField(
+                            onChanged: (value) {
+                              username = value;
+                            },
+                            cursorColor: MyColors.vividCerulean,
+                            style: TextStyle(color: MyColors.vividCerulean),
+                            decoration: InputDecoration(
+                              // hintText: 'Enter your text...',
+                              // hintText: 'Enter your email',
+                              hintStyle:
+                                  TextStyle(color: MyColors.spaceCadetTint5),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 6, horizontal: 16),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                     SizedBox(
                       height: 8,
                     ),
-                    _TextField(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Password",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Neumorphic(
+                          // padding: EdgeInsets.all(8),
+                          style: NeumorphicStyle(
+                            shape: NeumorphicShape.concave,
+                            boxShape: NeumorphicBoxShape.roundRect(
+                                BorderRadius.circular(24)),
+                            depth: -4,
+                            intensity: 0.9,
+                            // color: MyColors.caribbeanGreenTint7,
+                            color: Colors.white,
+                          ),
+                          child: TextFormField(
+                            onChanged: (value) {
+                              pass = value;
+                            },
+                            obscureText: true,
+                            cursorColor: MyColors.vividCerulean,
+                            style: TextStyle(color: MyColors.vividCerulean),
+                            decoration: InputDecoration(
+                              // hintText: 'Enter your text...',
+                              // hintText: 'Enter your password',
+                              hintStyle:
+                                  TextStyle(color: MyColors.spaceCadetTint5),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 6, horizontal: 16),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+
+                    /*  _TextField(
                       label: "Password",
                       hint: "",
                       onChanged: (lastName) {
                         setState(() {
-                          this.lastName = lastName;
+                          this.pass = lastName;
                         });
                       },
-                    ),
+                    ), */
                     SizedBox(
                       height: 14,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
-                      children: [ GFCheckbox(
-            activeIcon: const Icon(Icons.check, size: 8, color: GFColors.WHITE),
-            size: 12,
-            onChanged: (value) {
-              setState(() {
-                isRememberd = !isRememberd;
-              });
-            },
-            value: isRememberd),
-        const Text("Do you want to save this session?")],
+                      children: [
+                        GFCheckbox(
+                            activeBgColor: MyColors.caribbeanGreen,
+                            activeIcon: const Icon(Icons.check,
+                                size: 8, color: GFColors.WHITE),
+                            size: 14,
+                            onChanged: (value) {
+                              setState(() {
+                                isRememberd = !isRememberd;
+                              });
+                            },
+                            value: isRememberd),
+                        const Text("Do you want to save this session?")
+                      ],
                     ),
                     SizedBox(
                       height: 22,
                     ),
-                    Neumorphic(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                      style: NeumorphicStyle(
-                          color: MyColors.caribbeanGreenTint7, depth: 8),
-                      child: Text(
-                        "Sign In",
-                        style: TextStyle(
-                          color: MyColors.spaceCadetTint1,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18,
-                        ),
-                      ),
+                    InkWell(
+                      onTap: () async {
+                        setState(() {
+                          _isSigning = true;
+                        });
+                        
+                        await Future.delayed(Duration(seconds: 1));
+                        if (username == "admin") {
+                          logger.w("Admin");
+                        } else if (username.contains("user")) {
+                          logger.w("User");
+                          // c: Generate dataset
+                          /*   List<ProviderDataset> list =
+                              await _signInViewModel.mGenerateProviderDataset(); */
+                          List<ProviderDataset> list = await _commonViewModel
+                              .mGetPorviderDatasetFromJson(context: context);
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) {
+                            return SetLocationScreen(
+                              userName: username,
+                              providerDatasetList: list,
+                              // providerDatasetList: [],
+                            );
+                          }));
+                        } else {
+                          logger.w("Provider");
+                        }
+                      },
+                      child: _isSigning
+                          ? GFLoader(
+                              size: 20,
+                              type: GFLoaderType.ios,
+                            )
+                          : Neumorphic(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 32, vertical: 12),
+                              style: NeumorphicStyle(
+                                  color: MyColors.caribbeanGreenTint7,
+                                  depth: 5),
+                              child: Text(
+                                "Sign In",
+                                style: TextStyle(
+                                  color: MyColors.spaceCadetTint1,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
                     ),
                     /*  _AgeField(
                       age: age,
@@ -197,7 +333,13 @@ class __PageState extends State<_Page> {
   }
 
   bool _isButtonEnabled() {
-    return firstName.isNotEmpty && lastName.isNotEmpty;
+    return username.isNotEmpty && pass.isNotEmpty;
+  }
+  mSaveSessionStatus() async {
+      
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+    sharedPreferences.setBool(sessionStatus, isRememberd);
   }
 }
 
@@ -395,4 +537,5 @@ class _GenderField extends StatelessWidget {
       ],
     );
   }
+
 }

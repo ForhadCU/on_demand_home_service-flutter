@@ -20,6 +20,7 @@ import '../../../models/auto_complete_result.dart';
 import '../../../models/current_location_details.dart';
 import '../../../repository/repo_map_services.dart';
 import '../../../repository/repo_search_places.dart';
+import '../../../utils/constants.dart';
 
 class MapScreenCopy extends ConsumerStatefulWidget {
   final CurrentLocationDetails currentLocationDetails;
@@ -78,7 +79,7 @@ class _HomePageState extends ConsumerState<MapScreenCopy> {
   bool isReviews = true;
   bool isPhotos = false;
 
-  final key = '<AIzaSyAo215TRl_Nkdp1t0m48C6rda_c9vRD_E4>';
+  final key = MyConstants.googleApiKey;
 
   var selectedPlaceDetails;
 

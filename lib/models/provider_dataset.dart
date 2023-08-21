@@ -49,7 +49,7 @@ class ProviderDataset {
         jobs!.add(Jobs.fromJson(v));
       });
     }
-    activePeriod = json['active_period'];
+    activePeriod = json['activePeriod'];
     liveDistance = json['liveDistance'];
   }
 
@@ -70,7 +70,7 @@ class ProviderDataset {
     if (jobs != null) {
       data['jobs'] = jobs!.map((v) => v.toJson()).toList();
     }
-    data['active_period'] = activePeriod;
+    data['activePeriod'] = activePeriod;
     return data;
   }
 }
@@ -83,14 +83,14 @@ class Jobs {
   Jobs({this.consumerName, this.workingHour, this.ts});
 
   Jobs.fromJson(Map<String, dynamic> json) {
-    consumerName = json['consumer_name'];
+    consumerName = json['consumerName'];
     workingHour = json['workingHour'];
     ts = json['ts'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
-    data['consumer_name'] = consumerName;
+    data['consumerName'] = consumerName;
     data['workingHour'] = workingHour;
     data['ts'] = ts;
     return data;

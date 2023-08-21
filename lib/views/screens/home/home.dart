@@ -2,6 +2,7 @@
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/const/keywords.dart';
@@ -12,6 +13,7 @@ import 'package:thesis_project/utils/custom_text.dart';
 import 'package:thesis_project/utils/my_colors.dart';
 import 'package:thesis_project/utils/my_screensize.dart';
 import 'package:thesis_project/utils/statusbar.dart';
+import 'package:thesis_project/view_models/vm_bookings.dart';
 import 'package:thesis_project/view_models/vm_home.dart';
 import 'package:thesis_project/views/bookings/scr.bookings.dart';
 import 'package:thesis_project/views/screens/findProvider/find_provider.dart';
@@ -21,6 +23,7 @@ import 'package:thesis_project/views/screens/profile/scr_provider_profile.dart';
 import '../../../models/booking.dart';
 import '../../../models/current_location_details.dart';
 import '../../../models/food.dart';
+import '../../../utils/my_date_format.dart';
 
 class HomeScreen extends StatefulWidget {
   final CurrentLocationDetails currentLocationDetails;
@@ -47,6 +50,9 @@ class _HomeScreenState extends State<HomeScreen> {
   late CurrentLocationDetails? _currentLocationDetails;
 
   var _controllerAddress;
+  String _selectedCategory = electronics;
+
+  List<ProviderDataset>? _recommendedProviderList;
 
   @override
   void initState() {
@@ -65,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: MyColors.caribbeanGreenTint7.withOpacity(1),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
+              // _mOnClickSearchBtn();
               _mOnClickSearchBtn();
             },
             shape: CircleBorder(),
@@ -195,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         // color: booking.status! ? MyColors.vividmalachite : Colors.orange,
-        color: booking.status! ? Colors.white : Colors.white,
+        color: booking.bookingStatus! ? Colors.white : Colors.white,
         borderRadius: BorderRadius.circular(10),
       ),
 
@@ -214,7 +221,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Image(
                   image: AssetImage(
                     HomeViewModel().mGetServiceCatIcon(
-                            serviceCategory: booking.serviceCategory!) ??
+                            serviceCategory:
+                                booking.providerDataSet!.category!) ??
                         "assets/images/ic_cleaning.png",
                   ),
                   width: 28,
@@ -229,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "${booking.serviceCategory!} Service",
+                    "${booking.providerDataSet!.category!} Service",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
@@ -239,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       // Text("Price: "),
                       Text(
-                        "${booking.serviceFee} ",
+                        "${booking.providerDataSet!.serviceFee} ",
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       Text("Tk/hr"),
@@ -263,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                     // border: Border.all(color: Colors.black12),
                     border: Border.all(
-                      color: booking.status!
+                      color: booking.bookingStatus!
                           ? MyColors.vividmalachite
                           : Colors.orange,
                     ),
@@ -278,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           offset: Offset(.5, .5),
                           blurRadius: .5)
                     ]),
-                child: booking.status!
+                child: booking.bookingStatus!
                     ? Text(
                         "Confirmed",
                         style: TextStyle(
@@ -315,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    booking.schedule!,
+                    "${booking.workingHour} hour, ${MyDateFormat.mFormateDate2(DateTime.fromMillisecondsSinceEpoch(booking.ts!))}",
                     style: TextStyle(fontWeight: FontWeight.w500),
                   ),
                   SizedBox(
@@ -573,34 +581,73 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _vItem(ServiceCategory serviceCategoryList) {
     return InkWell(
+      splashColor: Colors.black12.withOpacity(.1),
       onTap: () {
-        _mOnClickCategory(serviceCategoryList);
+        // _mOnClickCategory(serviceCategoryList);
+        setState(() {
+          _selectedCategory = serviceCategoryList.name!;
+        });
       },
-      child: Container(
-        width: MyScreenSize.mGetWidth(context, 20),
-        margin: EdgeInsets.only(right: 4, left: 4, top: 8, bottom: 8),
-        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-        decoration: BoxDecoration(
-            border: Border.all(color: Colors.black12),
-            borderRadius: BorderRadius.circular(10),
-            // color: Colors.white.withOpacity(.2)),
-            color: Colors.white),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image(
-              image: AssetImage(serviceCategoryList.iconUri!),
-              width: 48,
-              height: 48,
-              fit: BoxFit.fill,
+      child: _selectedCategory != serviceCategoryList.name
+          ? Container(
+              width: MyScreenSize.mGetWidth(context, 20),
+              margin: EdgeInsets.only(right: 4, left: 4, top: 8, bottom: 8),
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black12),
+                  borderRadius: BorderRadius.circular(10),
+                  // color: Colors.white.withOpacity(.2)),
+                  color: Colors.white),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image(
+                    image: AssetImage(serviceCategoryList.iconUri!),
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.fill,
+                  ),
+                  SizedBox(
+                    height: 6,
+                  ),
+                  Text(serviceCategoryList.name!)
+                ],
+              ),
+            )
+          : Container(
+              width: MyScreenSize.mGetWidth(context, 22),
+              margin: EdgeInsets.only(right: 4, left: 4, top: 8, bottom: 8),
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black12),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 4,
+                        spreadRadius: 2,
+                        offset: Offset(1, 1))
+                  ],
+                  // color: Colors.white.withOpacity(.2)),
+                  color: BookingsViewModel().mGetServiceCatIconBgColor(
+                    categoryName: serviceCategoryList.name!,
+                  )),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image(
+                    image: AssetImage(serviceCategoryList.iconUri!),
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.fill,
+                  ),
+                  SizedBox(
+                    height: 6,
+                  ),
+                  Text(serviceCategoryList.name!)
+                ],
+              ),
             ),
-            SizedBox(
-              height: 6,
-            ),
-            Text(serviceCategoryList.name!)
-          ],
-        ),
-      ),
     );
   }
 
@@ -634,141 +681,154 @@ class _HomeScreenState extends State<HomeScreen> {
           width: MyScreenSize.mGetWidth(context, 100),
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: providerList.length,
+              itemCount: _recommendedProviderList!.length,
               // itemCount: 5,
               itemBuilder: (context, index) {
-                return _vItemProvider(providerList[index]);
+                return _vItemProvider(_recommendedProviderList![index]);
               }),
         )
       ],
     );
   }
 
-  _vItemProvider(ServiceProvider providerList) {
-    return Container(
-      margin: EdgeInsets.all(4),
-      width: MyScreenSize.mGetWidth(context, 36),
-      child: Stack(alignment: Alignment.center, children: [
-        // v: details
-        Positioned(
-          bottom: 0,
-          child: Column(
-            children: [
-              // v: body
-              Container(
-                padding: EdgeInsets.only(
-                  top: MyScreenSize.mGetHeight(context, 4),
-                  bottom: MyScreenSize.mGetHeight(context, 1),
-                  right: MyScreenSize.mGetWidth(context, 4),
-                  left: MyScreenSize.mGetWidth(context, 4),
-                ),
-                height: MyScreenSize.mGetHeight(context, 19),
-                width: MyScreenSize.mGetWidth(context, 36),
-                decoration: BoxDecoration(
-                    // color: Colors.white,
-                    border: Border.all(color: Colors.black12),
-                    // color: Colors.white.withOpacity(.2),
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(
-                      providerList.name!,
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Icon(
-                          Icons.star,
-                          color: Colors.orange,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: Colors.orange,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: Colors.orange,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: Colors.orange,
-                          size: 20,
-                        ),
-                        Icon(
-                          Icons.star,
+  _vItemProvider(ProviderDataset providerDataset) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return ProviderProfileScreen(providerDataset: providerDataset);
+        }));
+      },
+      child: Container(
+        margin: EdgeInsets.all(4),
+        width: MyScreenSize.mGetWidth(context, 36),
+        child: Stack(alignment: Alignment.center, children: [
+          // v: details
+          Positioned(
+            bottom: 0,
+            child: Column(
+              children: [
+                // v: body
+                Container(
+                  padding: EdgeInsets.only(
+                    top: MyScreenSize.mGetHeight(context, 4),
+                    bottom: MyScreenSize.mGetHeight(context, 1),
+                    right: MyScreenSize.mGetWidth(context, 4),
+                    left: MyScreenSize.mGetWidth(context, 4),
+                  ),
+                  height: MyScreenSize.mGetHeight(context, 19),
+                  width: MyScreenSize.mGetWidth(context, 36),
+                  decoration: BoxDecoration(
+                      // color: Colors.white,
+                      border: Border.all(color: Colors.black12),
+                      // color: Colors.white.withOpacity(.2),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14)),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(
+                        providerDataset.name!,
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      /*   Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Icon(
+                            Icons.star,
+                            color: Colors.orange,
+                            size: 20,
+                          ),
+                          Icon(
+                            Icons.star,
+                            color: Colors.orange,
+                            size: 20,
+                          ),
+                          Icon(
+                            Icons.star,
+                            color: Colors.orange,
+                            size: 20,
+                          ),
+                          Icon(
+                            Icons.star,
+                            color: Colors.orange,
+                            size: 20,
+                          ),
+                          Icon(
+                            Icons.star,
+                            color: Colors.grey,
+                            size: 20,
+                          ),
+                        ],
+                      ), */
+                      RatingStars(
+                        valueLabelVisibility: false,
+                        value: providerDataset.rating!,
+                        starSize: 12,
+                        starColor: Colors.amber.shade700,
+                      ),
+                      Text(
+                        "(${providerDataset.numOfReview} Reviews)",
+                        style: TextStyle(
                           color: Colors.grey,
-                          size: 20,
+                          fontSize: 14,
                         ),
-                      ],
-                    ),
-                    Text(
-                      "(${providerList.numOfReview} Reviews)",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14,
                       ),
-                    ),
-                    Text(
-                      "${providerList.category!} Service",
-                      style: TextStyle(
-                        color: MyColors.vividCerulean,
+                      Text(
+                        "${providerDataset.category!} Service",
+                        style: TextStyle(
+                          color: MyColors.vividCerulean,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "${providerList.serviceFee} Tk",
-                      style: TextStyle(
-                          color: Colors.deepOrange,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ],
+                      Text(
+                        "${providerDataset.serviceFee} Tk",
+                        style: TextStyle(
+                            color: Colors.deepOrange,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 6,
-              ),
-              // v: hire btn
-              NeumorphicButton(
-                style: NeumorphicStyle(
-                    color: MyColors.caribbeanGreenTint2,
-                    depth: 1,
-                    shape: NeumorphicShape.convex),
-                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                child: Text(
-                  "Check",
-                  style: TextStyle(color: Colors.white, fontSize: 12),
+                SizedBox(
+                  height: 6,
                 ),
-              )
-            ],
-          ),
-        ),
-        // v: img
-        Positioned(
-          top: 0,
-          child: Container(
-            padding: EdgeInsets.all(4),
-            decoration: BoxDecoration(
-                color: MyColors.caribbeanGreenTint7,
-                borderRadius: BorderRadius.circular(90),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black.withOpacity(.4),
-                      offset: Offset(0.5, .5),
-                      blurRadius: 1)
-                ]),
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              backgroundImage: AssetImage(providerList.imgUri!),
-              radius: 32,
+                // v: hire btn
+                NeumorphicButton(
+                  style: NeumorphicStyle(
+                      color: MyColors.caribbeanGreenTint2,
+                      depth: 1,
+                      shape: NeumorphicShape.convex),
+                  padding: EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                  child: Text(
+                    "Check",
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                )
+              ],
             ),
           ),
-        ),
-      ]),
+          // v: img
+          Positioned(
+            top: 0,
+            child: Container(
+              padding: EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                  color: MyColors.caribbeanGreenTint7,
+                  borderRadius: BorderRadius.circular(90),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(.4),
+                        offset: Offset(0.5, .5),
+                        blurRadius: 1)
+                  ]),
+              child: CircleAvatar(
+                backgroundColor: Colors.white,
+                backgroundImage: NetworkImage(providerDataset.imgUri!),
+                radius: 32,
+              ),
+            ),
+          ),
+        ]),
+      ),
     );
   }
 
@@ -802,6 +862,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _mLoadData() async {
     _greeting = _homeViewModel.mMakeGreetings();
+    _recommendedProviderList =
+        _homeViewModel.mSortProviderForMaxRating(widget.providerDatasetList);
     //  await _homeViewModel.mGetCurrentPostion();
     // await _homeViewModel.mCheckLocationPermission();
   }
@@ -881,13 +943,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _mGotoSearchScreen() {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      logger.d(
+      /* logger.d(
           "My lat: ${_currentLocationDetails!.lat}, My long: ${_currentLocationDetails!.long}, My place: ${_currentLocationDetails!.formattedAdress}");
-      logger.d("length: ${widget.providerDatasetList.length}");
+      logger.d("length: ${widget.providerDatasetList.length}"); */
       return FindProviderScreen(
         currentLocationDetails: _currentLocationDetails!,
-        // e: need service cat
-        serviceCategory: shifting,
+        serviceCategory: _selectedCategory,
         searchRange: 5,
         providerDatasetList: widget.providerDatasetList,
       );

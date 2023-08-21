@@ -63,4 +63,4 @@ const String shifting = "Shifting";
 const String barber = "Barber";
 const String tutor = "Tutor";
 
-
+const String numOfHirings = "numOfHirings";

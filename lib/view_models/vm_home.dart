@@ -1,20 +1,17 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
-
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:thesis_project/models/current_location_details.dart';
 import 'package:thesis_project/repository/repo_home.dart';
+import 'package:thesis_project/utils/sorting.dart';
 
 import '../const/constants.dart';
 import '../const/keywords.dart';
 import '../models/provider_dataset.dart';
 import '../models/reverse_geocode_loc_details.dart';
-import 'package:http/http.dart' as http;
 
 class HomeViewModel {
   final HomeRepository _homeRepository = HomeRepository();
+  final Sorting _sorting = Sorting();
   String? mGetServiceCatIcon({required String serviceCategory}) {
     switch (serviceCategory) {
       case acRepair:
@@ -177,4 +174,9 @@ class HomeViewModel {
     return placeName;
   }
 
+  mSortProviderForMaxRating(List<ProviderDataset> providerDatasetlist) {
+    List<ProviderDataset> list =
+        _sorting.quicksortForProviderMaxRating(providerDatasetlist);
+    return list;
+  }
 }

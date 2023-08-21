@@ -10,9 +10,17 @@ import 'package:thesis_project/models/provider_dataset.dart';
 import 'package:http/http.dart' as http;
 
 void main(List<String> args) {
-  Test test = Test();
+/*   Test test = Test();
 
-  test.mGenerateProviderDataset();
+  test.mGenerateProviderDataset(); */
+  int mili = DateTime.now().subtract(Duration(days: 1)).millisecondsSinceEpoch;
+
+  print(mili);
+
+  DateTime formated = (DateTime.fromMillisecondsSinceEpoch(mili));
+
+  print(formated);
+
 }
 
 class Test {

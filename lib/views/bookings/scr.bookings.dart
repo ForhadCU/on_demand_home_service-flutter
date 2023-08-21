@@ -12,11 +12,13 @@ import 'package:thesis_project/views/screens/profile/scr_provider_profile.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/my_colors.dart';
+import '../../utils/my_date_format.dart';
 import '../../utils/my_screensize.dart';
 import '../../view_models/vm_home.dart';
 
 class BookingsScreen extends StatefulWidget {
-  const BookingsScreen({super.key});
+  final Booking? booking;
+  const BookingsScreen({super.key, this.booking});
 
   @override
   State<BookingsScreen> createState() => _BookingsScreenState();
@@ -24,47 +26,57 @@ class BookingsScreen extends StatefulWidget {
 
 class _BookingsScreenState extends State<BookingsScreen> {
   BookingsViewModel _bookingsViewModel = BookingsViewModel();
+  List<Booking> _list = bookingList;
+  @override
+  void initState() {
+    super.initState();
+    widget.booking != null ? _list.add(widget.booking!) : null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.caribbeanGreenTint7,
-      body: Container(
-        padding: EdgeInsets.only(left: 12, top: 18, bottom: 12, right: 12),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: MyScreenSize.mGetWidth(context, 1),
-                  height: MyScreenSize.mGetHeight(context, 3),
-                  decoration: BoxDecoration(
-                    color: Colors.black26,
-                    borderRadius: BorderRadius.circular(5),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: MyColors.caribbeanGreenTint7,
+        body: Container(
+          padding: EdgeInsets.only(left: 12, top: 18, bottom: 12, right: 12),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: MyScreenSize.mGetWidth(context, 1),
+                    height: MyScreenSize.mGetHeight(context, 3),
+                    decoration: BoxDecoration(
+                      color: Colors.black26,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
                   ),
-                ),
-                SizedBox(
-                  width: 8,
-                ),
-                Text(
-                  "Bookings",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                  SizedBox(
+                    width: 8,
                   ),
-                )
-              ],
-            ),
-            SizedBox(
-              height: 24,
-            ),
-            Expanded(
-              child: ListView.builder(
-                  itemCount: bookingList.length,
-                  itemBuilder: (context, index) {
-                    return _vItem(bookingList[index]);
-                  }),
-            ),
-          ],
+                  Text(
+                    "Bookings",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 24,
+              ),
+              Expanded(
+                child: ListView.builder(
+                    itemCount: bookingList.length,
+                    reverse: true,
+                    itemBuilder: (context, index) {
+                      return _vItem(bookingList[index]);
+                    }),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -76,7 +88,9 @@ class _BookingsScreenState extends State<BookingsScreen> {
       margin: EdgeInsets.symmetric(vertical: 6),
       decoration: BoxDecoration(
           border: Border.all(
-              color: booking.status! ? MyColors.vividmalachite : Colors.orange,
+              color: booking.bookingStatus!
+                  ? MyColors.vividmalachite
+                  : Colors.orange,
               width: 1),
           color: Colors.white,
           borderRadius: BorderRadius.circular(5),
@@ -99,12 +113,13 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(90),
                     color: _bookingsViewModel.mGetServiceCatIconBgColor(
-                      categoryName: booking.serviceCategory!,
+                      categoryName: booking.providerDataSet!.category!,
                     )),
                 child: Image(
                   image: AssetImage(
                     HomeViewModel().mGetServiceCatIcon(
-                            serviceCategory: booking.serviceCategory!) ??
+                            serviceCategory:
+                                booking.providerDataSet!.category!) ??
                         "assets/images/ic_cleaning.png",
                   ),
                   width: 28,
@@ -119,7 +134,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "${booking.serviceCategory!} Service",
+                    "${booking.providerDataSet!.category!} Service",
                     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
                   ),
                   SizedBox(
@@ -129,7 +144,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                     children: [
                       // Text("Price: "),
                       Text(
-                        "${booking.serviceFee} ",
+                        "${booking.providerDataSet!.serviceFee!} ",
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       Text("Tk/hr"),
@@ -143,7 +158,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
             height: 24,
             color: Colors.black12,
           ),
-          // v: status
+          // v: bookingStatus
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -153,11 +168,11 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 decoration: BoxDecoration(
                     // border: Border.all(color: Colors.black12),
                     border: Border.all(
-                      color: booking.status!
+                      color: booking.bookingStatus!
                           ? MyColors.vividmalachite
                           : Colors.orange,
                     ),
-                    /* color: booking.status!
+                    /* color: booking.bookingStatus!
                           ? MyColors.vividmalachite
                           : Colors.orange, */
                     color: Colors.white,
@@ -168,7 +183,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                           offset: Offset(.5, .5),
                           blurRadius: .5)
                     ]),
-                child: booking.status!
+                child: booking.bookingStatus!
                     ? Text(
                         "Confirmed",
                         style: TextStyle(
@@ -216,7 +231,9 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          booking.schedule.toString(),
+                          "${booking.workingHour} hour, ${MyDateFormat.mFormateDate2(DateTime.fromMillisecondsSinceEpoch(booking.ts!))}",
+                          // booking.schedule.toString(),
+
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
                         SizedBox(
@@ -254,7 +271,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      backgroundImage: AssetImage(booking.providerImgUrl!),
+                      backgroundImage:
+                          NetworkImage(booking.providerDataSet!.imgUri!),
                     ),
                   ],
                 ),
@@ -271,7 +289,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          booking.providerName!,
+                          booking.providerDataSet!.name!,
                           style: TextStyle(
                               fontWeight: FontWeight.w400, fontSize: 18),
                         ),
@@ -282,7 +300,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                           children: [
                             // Text("Price: "),
                             Text(
-                              "${booking.providerAddress} ",
+                              "${booking.providerDataSet!.location} ",
                               style: TextStyle(fontWeight: FontWeight.normal),
                             ),
                           ],
@@ -319,12 +337,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
     );
   }
 
-  void _mAction(Booking booking) {/* 
+  void _mAction(Booking booking) {
+    /* 
     // e: get providers full details with providerId
     // launchUrl(Uri.parse("tel://01819692172"));
     // c: Goto Provider Profile
      Navigator.push(context, MaterialPageRoute(builder: (context) {
       return ProviderProfileScreen();
     }));
-  */ }
+  */
+  }
 }

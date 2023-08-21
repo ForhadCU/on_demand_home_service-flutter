@@ -10,7 +10,9 @@ import 'package:thesis_project/models/provider.dart';
 import 'package:thesis_project/models/provider_dataset.dart';
 import 'package:thesis_project/utils/my_colors.dart';
 import 'package:thesis_project/utils/my_screensize.dart';
+import 'package:thesis_project/view_models/vm_common.dart';
 import 'package:thesis_project/view_models/vm_find_provider.dart';
+import 'package:thesis_project/views/screens/findProvider/widgets/dlg_edit.dart';
 import 'package:thesis_project/views/screens/map/map.dart';
 import 'package:thesis_project/views/screens/profile/scr_provider_profile.dart';
 
@@ -92,7 +94,7 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
   _vSearchBar() {
     return InkWell(
       onTap: () {
-        // _mOnClikSearchBar(context);
+        _mOnClikEditButton(context);
       },
       child: Container(
         padding: EdgeInsets.only(right: 8),
@@ -110,7 +112,7 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
             border: InputBorder.none,
             // contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
             prefixIcon: Icon(Icons.arrow_back),
-            // suffixIcon: _vFilterIcon(),
+            suffixIcon: _vFilterIcon(),
             /* suffixIcon: Lottie.asset(
               "assets/animassets/filter.json",
               width: 24,
@@ -126,8 +128,8 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Image(
-        image: AssetImage("assets/images/ic_filter.png"),
-        color: MyColors.vividCerulean,
+        image: AssetImage("assets/images/ic_edit.png"),
+        color: Colors.black38,
         fit: BoxFit.fill,
         width: 14,
         height: 14,
@@ -135,12 +137,31 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
     );
   }
 
-  void _mOnClikSearchBar(BuildContext context) {
+  void _mOnClikEditButton(BuildContext context) {
     logger.w("Clicked search");
-    AwesomeDialog(
-            context: context,
-            customHeader: Lottie.asset("assets/animassets/filter.json"))
-        .show();
+    late int n;
+    CommonViewmodel.mSetFrucValueAsInt(
+        number: _searchRange,
+        callback: (int value) {
+          n = value;
+        });
+    showDialog(
+      barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return EditDialog(
+            currentRoundValue: _searchRange.floor(),
+            currentFrucValueAsInt: n,
+            callback: (double updatedRange) {
+              setState(() {
+                _searchRange = updatedRange;
+                _isGettingResults = true;
+
+                _mLoad();
+              });
+            },
+          );
+        });
   }
 
   _vInputOverview() {
@@ -229,6 +250,22 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
                       style: TextStyle(
                           color: MyColors.caribbeanGreen,
                           fontFamily: fontOswald))),
+              /* Expanded(
+                  child: InkWell(
+                    onTap: (){
+                      _isClicked
+                    },
+                    child: Row(
+                                  children: [
+                    Image(
+                      image: AssetImage("assets/images/ic_edit.png"),
+                      color: Colors.black26,
+                      width: 24,
+                      height: 24,
+                    ),
+                                  ],
+                                ),
+                  )) */
             ],
           ),
           /*  SizedBox(
@@ -324,6 +361,15 @@ class _FindProviderScreenState extends State<FindProviderScreen> {
                           fontWeight: FontWeight.bold,
                           fontSize: 22,
                           fontFamily: fontOswald),
+                    ),
+                    SizedBox(
+                      width: 12,
+                    ),
+                    Image(
+                      image: AssetImage("assets/images/ic_edit.png"),
+                      color: Colors.black26,
+                      width: 18,
+                      height: 18,
                     ),
                   ],
                 ),

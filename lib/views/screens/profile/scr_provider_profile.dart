@@ -4,11 +4,14 @@ import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:thesis_project/const/constants.dart';
+import 'package:thesis_project/models/booking.dart';
 import 'package:thesis_project/models/provider_dataset.dart';
 import 'package:thesis_project/models/working_hour.dart';
 import 'package:thesis_project/utils/my_colors.dart';
 import 'package:thesis_project/utils/my_screensize.dart';
 import 'package:thesis_project/utils/statusbar.dart';
+import 'package:thesis_project/view_models/vm_provider_profile.dart';
+import 'package:thesis_project/views/bookings/scr.bookings.dart';
 
 class ProviderProfileScreen extends StatefulWidget {
   final ProviderDataset? providerDataset;
@@ -20,10 +23,12 @@ class ProviderProfileScreen extends StatefulWidget {
 }
 
 class ProviderProfileScreenState extends State<ProviderProfileScreen> {
+  ProviderProfileViewModel _profileViewModel = ProviderProfileViewModel();
   late var currentDate = DateTime.now();
   late DatePickerController _datePickerController;
   late List<DateTime> selectedDateList;
   int _selectedHour = 1;
+  DateTime _selectedDate = DateTime.now();
   late ProviderDataset _providerDataset;
   @override
   void initState() {
@@ -44,7 +49,9 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    uCustomStatusBar(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.light);
+    uCustomStatusBar(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light);
 
     return Scaffold(
       backgroundColor: MyColors.caribbeanGreenTint7,
@@ -78,13 +85,12 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
                 // child: Image(image: AssetImage("assets/images/provider1.jpg",), fit: BoxFit.fill,),
                 child: CircleAvatar(
                   // foregroundImage: AssetImage("assets/images/provider4.jpeg"),
-                  foregroundImage:
-                      NetworkImage(_providerDataset.imgUri!),
+                  foregroundImage: NetworkImage(_providerDataset.imgUri!),
                 )),
           ),
           // v: Name and Rating
           Positioned(
-            top: MyScreenSize.mGetHeight(context, 34),
+            top: MyScreenSize.mGetHeight(context, 28),
             left: 8,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -123,6 +129,37 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
                   valueLabelColor: Colors.black26,
                   starOffColor: Colors.black26,
                 ),
+                SizedBox(
+                  height: 14,
+                ),
+                Row(
+                  children: [
+                    InkWell(
+                        onTap: () async {
+                          await _profileViewModel
+                              .makePhoneCall(widget.providerDataset!.phone!);
+                        },
+                        child: Icon(
+                          Icons.phone,
+                          color: Colors.red,
+                          size: 24,
+                        )),
+                    SizedBox(
+                      width: 14,
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        await _profileViewModel
+                            .sendEmail("${widget.providerDataset!.name}@gmail.com");
+                      },
+                      child: Icon(
+                        Icons.email,
+                        color: Colors.blue,
+                        size: 24,
+                      ),
+                    )
+                  ],
+                )
               ],
             ),
           ),
@@ -198,6 +235,7 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
                                 setState(() {
                                   // _selectedValue = date;
                                   logger.d(date);
+                                  _selectedDate = date;
                                   selectedDateList.clear();
                                   selectedDateList.add(date);
                                 });
@@ -273,7 +311,22 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
                               ],
                             ),
                           ),
+                          // v: Hire Now
                           NeumorphicButton(
+                            onPressed: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (contex) {
+                                return BookingsScreen(
+                                  booking: Booking(
+                                    providerDataSet: widget.providerDataset,
+                                    workingHour:
+                                        double.parse(_selectedHour.toString()),
+                                    ts: _selectedDate.millisecondsSinceEpoch,
+                                    bookingStatus: false,
+                                  ),
+                                );
+                              }));
+                            },
                             // margin: EdgeInsets.all(4),
                             padding: EdgeInsets.symmetric(
                               horizontal: MyScreenSize.mGetWidth(context, 10),

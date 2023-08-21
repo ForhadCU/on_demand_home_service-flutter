@@ -29,8 +29,8 @@ class MyApp extends StatelessWidget {
         // brightness: Brightness.dark
       ),
       // home: const HomePage(),
-      // home: const SignUpScreen(),
-      home: SignInScreen(),
+      home: const SignUpScreen(),
+      // home: SignInScreen(),
     );
   }
 }

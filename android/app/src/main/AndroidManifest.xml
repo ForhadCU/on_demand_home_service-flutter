@@ -3,6 +3,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!-- Include only if your app benefits from precise location access -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -39,6 +40,6 @@
             android:value="2" />
 
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBQDltWK8CTLn-krUv17NoPgTILRRQgmjY" />
+            android:value="AIzaSyDyw9Lf_ffIhVAaCt2IA7Bx13ddLBdsbkg" />
     </application>
 </manifest>

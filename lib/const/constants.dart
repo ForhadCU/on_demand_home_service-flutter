@@ -1,13 +1,16 @@
 import 'package:logger/logger.dart';
 import 'package:thesis_project/const/keywords.dart';
 import 'package:thesis_project/models/provider.dart';
+import 'package:thesis_project/models/provider_dataset.dart';
 import 'package:thesis_project/models/working_hour.dart';
 
 import '../models/booking.dart';
 import '../models/servie_category.dart';
 
 final Logger logger = Logger();
+
 const String apiKey = "My Api Key";
+const String userEmail = "user073@gmail.com";
 const String dummyFoodDesc =
     "Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium optio, eaque rerum! Provident similique accusantium nemo autem. Veritatis obcaecati tenetur iure eius earum ut molestias architecto voluptate aliquam nihil, eveniet aliquid culpa officia aut! Impedit sit sunt quaerat, odit, tenetur error, harum nesciunt ipsum debitis quas aliquid. ";
 List<ServiceCategory> serviceCategoryList = [
@@ -132,16 +135,82 @@ List<ServiceProvider> providerList = [
 
 List<Booking> bookingList = [
   Booking(
-    serviceCategory: acRepair,
-    serviceFee: 450,
-    schedule: "2 hours, 08 Nov",
+    providerDataSet: ProviderDataset(
+        name: "Provider 049",
+        category: "Shifting",
+        imgUri: "https://randomuser.me/api/portraits/men/53.jpg",
+        rating: 3.4,
+        monthlyRating: 4.9,
+        numOfReview: 10,
+        serviceFee: 599,
+        location: "Rail Gate, Chittagon Univsity",
+        lat: 22.478792360818773,
+        long: 91.79682897786998,
+        phone: "+8801739870437",
+        jobs: [
+          Jobs(
+            consumerName: "Consumer 011",
+            workingHour: 2,
+            ts: null,
+          ),
+        ],
+        activePeriod: 596,
+        liveDistance: 3.4),
+    ts: DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch,
     workingHour: 2,
-    status: false,
-    providerName: "Shariful Sheik",
-    providerAddress: "Chowdhuryhat, Chittagong",
-    providerImgUrl: "assets/images/provider1.jpg",
+    bookingStatus: true,
+  ),Booking(
+    providerDataSet: ProviderDataset(
+        name: "Provider 061",
+        category: "Painting",
+        imgUri: "https://randomuser.me/api/portraits/men/73.jpg",
+        rating: 3.8,
+        monthlyRating: 4.1,
+        numOfReview: 11,
+        serviceFee: 250,
+        location: "Jobra, Chittagong Univsity",
+        lat: 22.478792360818773,
+        long: 91.79682897786998,
+        phone: "+8801739870437",
+        jobs: [
+          Jobs(
+            consumerName: "Consumer 011",
+            workingHour: 2,
+            ts: null,
+          ),
+        ],
+        activePeriod: 596,
+        liveDistance: 1.2),
+    ts: DateTime.now().subtract(const Duration(days: 2)).millisecondsSinceEpoch,
+    workingHour: 3,
+    bookingStatus: true,
+  ),Booking(
+    providerDataSet: ProviderDataset(
+        name: "Provider 011",
+        category: "Plumbing",
+        imgUri: "https://randomuser.me/api/portraits/men/76.jpg",
+        rating: 3.0,
+        monthlyRating: 6.1,
+        numOfReview: 15,
+        serviceFee: 450,
+        location: "Muradpur, Chittagong",
+        lat: 22.478792360818773,
+        long: 91.79682897786998,
+        phone: "+8801739870424",
+        jobs: [
+          Jobs(
+            consumerName: "Consumer 011",
+            workingHour: 2,
+            ts: null,
+          ),
+        ],
+        activePeriod: 596,
+        liveDistance: 1.2),
+    ts: DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch,
+    workingHour: 4,
+    bookingStatus: false,
   ),
-  Booking(
+/*   Booking(
     serviceCategory: cleaning,
     serviceFee: 350,
     schedule: "3 hours, 02 Jul",
@@ -160,7 +229,7 @@ List<Booking> bookingList = [
     providerName: "Ahsan Ullah",
     providerAddress: "Chowdhuryhat, Chittagong, Bangladesh",
     providerImgUrl: "assets/images/provider1.jpg",
-  ),
+  ), */
 ];
 
 List<WorkingHour> workingHourList = [

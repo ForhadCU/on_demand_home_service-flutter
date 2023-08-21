@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
 import '../const/constants.dart';
@@ -33,12 +35,13 @@ class SignUpViewModel {
       );
     }
 
+    print("ok");
+
     // c: Convert the object data list to json data list
     var jsonResult = List.generate(providerDatasetList.length,
         (index) => providerDatasetList[index].toJson());
-    print("DataType of result is : ${jsonResult.runtimeType}");
-    print("Results: $jsonResult");
-
+    logger.d("DataType of result is : ${jsonResult.runtimeType}");
+    logger.d("Results: $jsonResult");
 
     // c: Save this List of map to a json file
     _mSaveGeneratedDataset(jsonResult);
@@ -122,5 +125,59 @@ class SignUpViewModel {
   String _mGetRandPlaceName() {
     return placeNameList[
         _mGenerateRandomNum(min: 0, max: placeNameList.length)];
+  }
+
+  Future<void> mSignUp({
+    required String email,
+    required String password,
+  }) async {
+    FirebaseAuth mAuth = FirebaseAuth.instance;
+
+ /*    UserCredential userCredential = await mAuth.createUserWithEmailAndPassword(
+        email: userEmail, password: "1234567");
+    User user = userCredential.user!;
+    await mSaveUserData(user); */
+  }
+
+  Future<void> mSaveUserData(User? user) async {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    late int _numOfHiring;
+
+    await firebaseFirestore.collection(USER).doc(userEmail).set({
+      email: user!.email,
+      acRepair: 3,
+      paintings: 5,
+      electronics: 4,
+      cleaning: 2,
+      beauty: 1,
+      plumbing: 0,
+      shifting: 1,
+      barber: 3,
+      numOfHirings: 6
+    });
+
+    await firebaseFirestore
+        .collection(USER)
+        .doc(user.email)
+        .get()
+        .then((value) {
+      DocumentSnapshot<Map<String, dynamic>> res = value;
+      _numOfHiring = res.get(numOfHirings);
+      print(res.get(numOfHirings));
+    });
+    await firebaseFirestore
+        .collection(USER)
+        .doc(userEmail)
+        .update({numOfHirings: _numOfHiring + 1});
+
+    await firebaseFirestore
+        .collection(USER)
+        .doc(user.email)
+        .get()
+        .then((value) {
+      DocumentSnapshot<Map<String, dynamic>> res = value;
+      _numOfHiring = res.get(numOfHirings);
+      print(res.get(numOfHirings));
+    });
   }
 }

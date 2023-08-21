@@ -12,6 +12,7 @@ import 'package:thesis_project/utils/my_screensize.dart';
 import 'package:thesis_project/utils/statusbar.dart';
 import 'package:thesis_project/view_models/vm_signup.dart';
 import 'package:thesis_project/views/screens/setLocation/set_location.dart';
+import 'package:thesis_project/views/signIn/scr.sign_in.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -97,14 +98,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        NeumorphicText(
-          "Hey!",
-          style: NeumorphicStyle(
-              depth: 1,
-              shadowDarkColor: MyColors.spaceCadetShadow1,
-              color: MyColors.spaceCadetTint1),
-          textStyle:
-              NeumorphicTextStyle(fontFamily: fontBebasNue, fontSize: 46),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            NeumorphicText(
+              "Hey!",
+              style: NeumorphicStyle(
+                  depth: 1,
+                  shadowDarkColor: MyColors.spaceCadetShadow1,
+                  color: MyColors.spaceCadetTint1),
+              textStyle:
+                  NeumorphicTextStyle(fontFamily: fontBebasNue, fontSize: 46),
+            ),
+            InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return SignInScreen();
+                  }));
+                },
+                child: Text(
+                  "Sign in",
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ))
+          ],
         ),
         NeumorphicText(
           "Register Now",
@@ -458,16 +474,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
         });
 
         // c: Generate dataset
-        List<ProviderDataset> list =
-            await _signUpViewModel.mGenerateProviderDataset();
+        /*  List<ProviderDataset> list =
+            await _signUpViewModel.mGenerateProviderDataset(); */
+        await _signUpViewModel.mSignUp(
+            email: "user@gmail.com", password: "1234567");
 
-        _mNavigate(list);
+        _mNavigate();
       },
       style: NeumorphicStyle(
-        depth: 2,
+        depth: 5,
         intensity: 0.8,
         shape: NeumorphicShape.convex,
-        color: MyColors.caribbeanGreen,
+        color: MyColors.caribbeanGreenTint7,
         boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(24)),
       ),
       child: Row(
@@ -480,16 +498,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 )
               : Icon(
                   Icons.arrow_forward_ios,
-                  color: MyColors.caribbeanGreenTint7,
+                  color: MyColors.caribbeanGreenTint3,
                 ),
         ],
       ),
     );
   }
 
-  void _mNavigate(List<ProviderDataset> list) {
+  void _mNavigate() {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return SetLocationScreen(providerDatasetList: list);
+      return SignInScreen();
     }));
   }
 }
