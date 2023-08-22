@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/models/booking.dart';
+import 'package:thesis_project/utils/statusbar.dart';
 import 'package:thesis_project/view_models/vm_bookings.dart';
 import 'package:thesis_project/views/screens/profile/scr_provider_profile.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -18,7 +19,8 @@ import '../../view_models/vm_home.dart';
 
 class BookingsScreen extends StatefulWidget {
   final Booking? booking;
-  const BookingsScreen({super.key, this.booking});
+  final String? provider;
+  const BookingsScreen({super.key, this.booking, this.provider});
 
   @override
   State<BookingsScreen> createState() => _BookingsScreenState();
@@ -27,6 +29,12 @@ class BookingsScreen extends StatefulWidget {
 class _BookingsScreenState extends State<BookingsScreen> {
   BookingsViewModel _bookingsViewModel = BookingsViewModel();
   List<Booking> _list = bookingList;
+
+  bool isAcceptedCliked = false;
+  bool isRejectedClicked = false;
+
+  // bool _isCardClicked = false;
+
   @override
   void initState() {
     super.initState();
@@ -35,9 +43,15 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    uCustomStatusBar();
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.caribbeanGreenTint7,
+        /*  appBar: AppBar(
+          title: Text("Admin Panel"),
+          backgroundColor: MyColors.caribbeanGreenTint7,
+          elevation: 0,
+        ), */
         body: Container(
           padding: EdgeInsets.only(left: 12, top: 18, bottom: 12, right: 12),
           child: Column(
@@ -329,9 +343,92 @@ class _BookingsScreenState extends State<BookingsScreen> {
                     ),
                   ),
                 ),
-              )
+              ),
             ],
-          )
+          ),
+          SizedBox(
+            height: 28,
+          ),
+          widget.provider != null
+              ? Visibility(
+                  visible:
+                      !booking.acceptanceStatus! && !booking.rejectanceStatus!,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      NeumorphicButton(
+                        onPressed: () {
+                          setState(() {
+                            booking.rejectanceStatus = true;
+                            booking.acceptanceStatus = false;
+                            booking.bookingStatus = false;
+                          });
+                        },
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                        style: NeumorphicStyle(color: Colors.red),
+                        child: Text(
+                          "Reject",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      NeumorphicButton(
+                        onPressed: () {
+                          booking.acceptanceStatus = true;
+                          booking.rejectanceStatus = false;
+                          booking.bookingStatus = true;
+                        },
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                        style: NeumorphicStyle(color: MyColors.vividmalachite),
+                        child: Text(
+                          "Accept",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(),
+          booking.acceptanceStatus!
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    NeumorphicButton(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 32, vertical: 4),
+                      style: NeumorphicStyle(
+                          color: Colors.white,
+                          border: NeumorphicBorder(
+                              color: MyColors.vividmalachite.withOpacity(.8))),
+                      child: Text(
+                        "Accepted",
+                        style: TextStyle(color: MyColors.vividmalachite),
+                      ),
+                    ),
+                  ],
+                )
+              : Container(),
+          booking.rejectanceStatus!
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    NeumorphicButton(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 32, vertical: 4),
+                      style: NeumorphicStyle(
+                          color: Colors.white,
+                          border: NeumorphicBorder(
+                            color: Colors.red.withOpacity(.8),
+                          )),
+                      child: Text(
+                        "Rejected",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                )
+              : Container(),
         ],
       ),
     );

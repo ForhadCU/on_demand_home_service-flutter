@@ -3820,10 +3820,10 @@
   {
     "name": "Provider 089",
     "category": "Barber",
-    "imgUri": "https://randomuser.me/api/portraits/men/101.jpg",
+    "imgUri": "https://randomuser.me/api/portraits/men/19.jpg",
     "rating": 0.0,
     "monthlyRating": 4.1,
-    "numOfReview": 64,
+    "numOfReview": 150,
     "serviceFee": 557,
     "location": "Muradpur, Chittagong",
     "lat": 22.478767117210765,
@@ -4069,7 +4069,7 @@
   {
     "name": "Provider 096",
     "category": "Painting",
-    "imgUri": "https://randomuser.me/api/portraits/men/108.jpg",
+    "imgUri": "https://randomuser.me/api/portraits/men/18.jpg",
     "rating": 4.2,
     "monthlyRating": 3.9,
     "numOfReview": 65,

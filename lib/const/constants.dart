@@ -136,6 +136,34 @@ List<ServiceProvider> providerList = [
 List<Booking> bookingList = [
   Booking(
     providerDataSet: ProviderDataset(
+        name: "Provider 011",
+        category: "Plumbing",
+        imgUri: "https://randomuser.me/api/portraits/men/76.jpg",
+        rating: 3.0,
+        monthlyRating: 6.1,
+        numOfReview: 15,
+        serviceFee: 450,
+        location: "Muradpur, Chittagong",
+        lat: 22.478792360818773,
+        long: 91.79682897786998,
+        phone: "+8801739870424",
+        jobs: [
+          Jobs(
+            consumerName: "Consumer 011",
+            workingHour: 2,
+            ts: null,
+          ),
+        ],
+        activePeriod: 596,
+        liveDistance: 1.2),
+    ts: DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch,
+    workingHour: 4,
+    bookingStatus: true,
+    acceptanceStatus: true,
+    rejectanceStatus: false,
+  ),
+  Booking(
+    providerDataSet: ProviderDataset(
         name: "Provider 049",
         category: "Shifting",
         imgUri: "https://randomuser.me/api/portraits/men/53.jpg",
@@ -159,7 +187,10 @@ List<Booking> bookingList = [
     ts: DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch,
     workingHour: 2,
     bookingStatus: true,
-  ),Booking(
+    acceptanceStatus: true,
+    rejectanceStatus: false,
+  ),
+  Booking(
     providerDataSet: ProviderDataset(
         name: "Provider 061",
         category: "Painting",
@@ -183,32 +214,9 @@ List<Booking> bookingList = [
         liveDistance: 1.2),
     ts: DateTime.now().subtract(const Duration(days: 2)).millisecondsSinceEpoch,
     workingHour: 3,
-    bookingStatus: true,
-  ),Booking(
-    providerDataSet: ProviderDataset(
-        name: "Provider 011",
-        category: "Plumbing",
-        imgUri: "https://randomuser.me/api/portraits/men/76.jpg",
-        rating: 3.0,
-        monthlyRating: 6.1,
-        numOfReview: 15,
-        serviceFee: 450,
-        location: "Muradpur, Chittagong",
-        lat: 22.478792360818773,
-        long: 91.79682897786998,
-        phone: "+8801739870424",
-        jobs: [
-          Jobs(
-            consumerName: "Consumer 011",
-            workingHour: 2,
-            ts: null,
-          ),
-        ],
-        activePeriod: 596,
-        liveDistance: 1.2),
-    ts: DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch,
-    workingHour: 4,
     bookingStatus: false,
+    acceptanceStatus: false,
+    rejectanceStatus: false,
   ),
 /*   Booking(
     serviceCategory: cleaning,

@@ -323,6 +323,8 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
                                         double.parse(_selectedHour.toString()),
                                     ts: _selectedDate.millisecondsSinceEpoch,
                                     bookingStatus: false,
+                                    acceptanceStatus: false,
+                                    rejectanceStatus: false,
                                   ),
                                 );
                               }));

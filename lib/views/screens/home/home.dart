@@ -28,8 +28,10 @@ import '../../../utils/my_date_format.dart';
 class HomeScreen extends StatefulWidget {
   final CurrentLocationDetails currentLocationDetails;
   final List<ProviderDataset> providerDatasetList;
+  final String? provider;
   const HomeScreen(
       {super.key,
+      this.provider,
       required this.currentLocationDetails,
       required this.providerDatasetList});
 
@@ -96,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
           body: _pageIndex == 0
               ? _vHome()
               : _pageIndex == 1
-                  ? BookingsScreen()
+                  ? BookingsScreen(provider: widget.provider,)
                   : null),
     );
   }

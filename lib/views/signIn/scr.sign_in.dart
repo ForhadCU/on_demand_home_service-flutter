@@ -1,15 +1,16 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
-import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thesis_project/const/constants.dart';
+import 'package:thesis_project/models/booking.dart';
 import 'package:thesis_project/utils/my_colors.dart';
 import 'package:thesis_project/utils/statusbar.dart';
 import 'package:thesis_project/view_models/vm_common.dart';
 import 'package:thesis_project/view_models/vm_singin.dart';
-import 'package:thesis_project/views/screens/home/home.dart';
+import 'package:thesis_project/views/bookings/scr.bookings.dart';
+import 'package:thesis_project/views/screens/admin_panel/scr_admin_panel.dart';
 import 'package:thesis_project/views/screens/setLocation/set_location.dart';
 import 'package:thesis_project/views/screens/signUp/signup.dart';
 import 'package:thesis_project/views/signIn/widgets/top_bar.dart';
@@ -17,6 +18,7 @@ import 'package:thesis_project/views/signIn/widgets/top_bar.dart';
 import '../../const/keywords.dart';
 import '../../models/provider_dataset.dart';
 import '../../utils/theme_configurator.dart';
+import '../screens/admin_panel/pages/provider_data.dart';
 
 class SignInScreen extends StatelessWidget {
   @override
@@ -240,10 +242,20 @@ class __PageState extends State<_Page> {
                         setState(() {
                           _isSigning = true;
                         });
-                        
+
                         await Future.delayed(Duration(seconds: 1));
                         if (username == "admin") {
                           logger.w("Admin");
+                          /* Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return AdminPanelScreen();
+                          })); */
+                          List<ProviderDataset> list = await _commonViewModel
+                              .mGetPorviderDatasetFromJson(context: context);
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return ProviderDataPage(providerDatasetList: list);
+                          }));
                         } else if (username.contains("user")) {
                           logger.w("User");
                           // c: Generate dataset
@@ -261,6 +273,17 @@ class __PageState extends State<_Page> {
                           }));
                         } else {
                           logger.w("Provider");
+                          List<ProviderDataset> list = await _commonViewModel
+                              .mGetPorviderDatasetFromJson(context: context);
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) {
+                            return SetLocationScreen(
+                              provider: "Ok",
+                              userName: username,
+                              providerDatasetList: list,
+                              // providerDatasetList: [],
+                            );
+                          }));
                         }
                       },
                       child: _isSigning
@@ -335,8 +358,8 @@ class __PageState extends State<_Page> {
   bool _isButtonEnabled() {
     return username.isNotEmpty && pass.isNotEmpty;
   }
+
   mSaveSessionStatus() async {
-      
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     sharedPreferences.setBool(sessionStatus, isRememberd);
@@ -537,5 +560,4 @@ class _GenderField extends StatelessWidget {
       ],
     );
   }
-
 }

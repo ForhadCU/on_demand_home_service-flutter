@@ -23,7 +23,9 @@ import '../../../view_models/vm_set_location.dart';
 class SetLocationScreen extends ConsumerStatefulWidget {
   final String userName;
   final List<ProviderDataset> providerDatasetList;
-  const SetLocationScreen({required this.providerDatasetList, required this.userName, super.key});
+  final String? provider;
+  const SetLocationScreen(
+      {required this.providerDatasetList, required this.userName, this.provider, super.key});
 
   @override
   _SetLocationScreenState createState() => _SetLocationScreenState();
@@ -39,7 +41,6 @@ class _SetLocationScreenState extends ConsumerState<SetLocationScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -462,6 +463,7 @@ class _SetLocationScreenState extends ConsumerState<SetLocationScreen> {
   void _mGotoHome(CurrentLocationDetails currentLocationDetails) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return HomeScreen(
+        provider: widget.provider,
           currentLocationDetails: currentLocationDetails,
           providerDatasetList: widget.providerDatasetList);
     }));

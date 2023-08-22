@@ -5,9 +5,11 @@ class Booking {
   double? workingHour;
   int? ts;
   bool? bookingStatus;
+  bool? acceptanceStatus;
+  bool? rejectanceStatus;
 
   Booking(
-      {this.providerDataSet, this.workingHour, this.ts, this.bookingStatus});
+      {this.providerDataSet, this.workingHour, this.ts, this.bookingStatus, this.acceptanceStatus, this.rejectanceStatus});
 
   Booking.fromJson({required Map<String, dynamic> json}) {
     providerDataSet = json["providerDataSet"] != null
@@ -16,6 +18,7 @@ class Booking {
     workingHour = json["workingHour"];
     ts = json["ts"];
     bookingStatus = json["bookingStatus"];
+    acceptanceStatus = json["acceptanceStatus"];
   }
 
   Map<String, dynamic> toJson() {
@@ -28,6 +31,7 @@ class Booking {
     data["workingHour"] = workingHour;
     data["ts"] = ts;
     data["bookingStatus"] = bookingStatus;
+    data["acceptanceStatus"] = acceptanceStatus;
 
     return data;
   }
