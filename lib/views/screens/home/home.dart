@@ -18,6 +18,8 @@ import 'package:thesis_project/view_models/vm_home.dart';
 import 'package:thesis_project/views/bookings/scr.bookings.dart';
 import 'package:thesis_project/views/screens/findProvider/find_provider.dart';
 import 'package:thesis_project/views/screens/home/widgets/bottom_nav.dart';
+import 'package:thesis_project/views/screens/map/map_copy.dart';
+import 'package:thesis_project/views/screens/map/map_user_position.dart';
 import 'package:thesis_project/views/screens/profile/scr_provider_profile.dart';
 
 import '../../../models/booking.dart';
@@ -40,7 +42,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String _userName = "Mrs. Kaberi Jaman";
+  String _userName = "User 098";
   String _userAddress = "Jobra, Chittagong";
   FocusNode? _focusNode;
   final List<Food> _listFood1 = [];
@@ -69,37 +71,44 @@ class _HomeScreenState extends State<HomeScreen> {
     uCustomStatusBar();
 
     return SafeArea(
-      child: Scaffold(
-          backgroundColor: MyColors.caribbeanGreenTint7.withOpacity(1),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              // _mOnClickSearchBtn();
-              _mOnClickSearchBtn();
-            },
-            shape: CircleBorder(),
-            backgroundColor: MyColors.spaceCadetTint1,
-            child: Icon(
-              Icons.search,
-              color: MyColors.caribbeanGreenTint6,
+      child: WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Scaffold(
+            backgroundColor: MyColors.caribbeanGreenTint7.withOpacity(1),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                // _mOnClickSearchBtn();
+                _mOnClickSearchBtn();
+              },
+              shape: CircleBorder(),
+              backgroundColor: MyColors.spaceCadetTint1,
+              child: Icon(
+                Icons.search,
+                color: MyColors.caribbeanGreenTint6,
+              ),
             ),
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          bottomNavigationBar: HomeBottomNavBar(
-            pageIndex: _pageIndex,
-            fabLocation: FloatingActionButtonLocation.centerDocked,
-            shape: const CircularNotchedRectangle(),
-            callback: (int pageIndex) {
-              setState(() {
-                _pageIndex = pageIndex;
-              });
-            },
-          ),
-          body: _pageIndex == 0
-              ? _vHome()
-              : _pageIndex == 1
-                  ? BookingsScreen(provider: widget.provider,)
-                  : null),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
+            bottomNavigationBar: HomeBottomNavBar(
+              pageIndex: _pageIndex,
+              fabLocation: FloatingActionButtonLocation.centerDocked,
+              shape: const CircularNotchedRectangle(),
+              callback: (int pageIndex) {
+                setState(() {
+                  _pageIndex = pageIndex;
+                });
+              },
+            ),
+            body: _pageIndex == 0
+                ? _vHome()
+                : _pageIndex == 1
+                    ? BookingsScreen(
+                        provider: widget.provider,
+                      )
+                    : null),
+      ),
     );
   }
 
@@ -166,6 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: EdgeInsets.only(top: 4, bottom: 5),
       child: CarouselSlider(
         options: CarouselOptions(
+          autoPlayAnimationDuration: Duration(milliseconds: 300),
           height: 150.0,
           autoPlay: true,
         ),
@@ -349,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _vUserDetailsPart(),
-        _vNotificationBtn(),
+        _vMapIconBtn(),
       ],
     );
   }
@@ -409,25 +419,37 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _vNotificationBtn() {
+  _vMapIconBtn() {
     return Expanded(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            // padding: EdgeInsets.all(4),
-            height: MyScreenSize.mGetHeight(context, 6),
-            width: MyScreenSize.mGetWidth(context, 12),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: MyColors.caribbeanGreenTint6),
-            child: Icon(
-              Icons.notifications,
-              color: MyColors.spaceCadet,
-              size: 28,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return UserCurrentPostionScreen(
+                currentLocationDetails: widget.currentLocationDetails);
+          }));
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              // padding: EdgeInsets.all(4),
+              margin: EdgeInsets.only(right: 8),
+              height: MyScreenSize.mGetHeight(context, 6),
+              width: MyScreenSize.mGetWidth(context, 12),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.black12,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                  color: MyColors.caribbeanGreenTint6),
+              child: Icon(
+                Icons.location_pin,
+                color: Colors.red,
+                size: 28,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -466,7 +488,7 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 2,
           ), */
           Text(
-            "What you are looking for today.",
+            "What you are looking for today?",
             style: TextStyle(
               fontFamily: fontOswald,
               fontSize: 18,

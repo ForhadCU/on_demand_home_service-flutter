@@ -75,7 +75,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
-                  )
+                  ),
+                /*   Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Icon(Icons.home, color: Colors.black26,)
+                    ],
+                  ) */
                 ],
               ),
               SizedBox(

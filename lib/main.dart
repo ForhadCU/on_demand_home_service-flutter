@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:thesis_project/views/laucher/scr_launcher.dart';
 import 'package:thesis_project/views/screens/signUp/signup.dart';
 import 'package:thesis_project/views/signIn/scr.sign_in.dart';
 
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
       ),
       // home: const HomePage(),
       home: const SignUpScreen(),
+      // home: LaucherScreen(),
       // home: SignInScreen(),
     );
   }

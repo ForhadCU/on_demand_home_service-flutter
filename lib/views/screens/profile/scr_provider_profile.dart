@@ -1,10 +1,12 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:thesis_project/const/constants.dart';
 import 'package:thesis_project/models/booking.dart';
+import 'package:thesis_project/models/current_location_details.dart';
 import 'package:thesis_project/models/provider_dataset.dart';
 import 'package:thesis_project/models/working_hour.dart';
 import 'package:thesis_project/utils/my_colors.dart';
@@ -12,6 +14,7 @@ import 'package:thesis_project/utils/my_screensize.dart';
 import 'package:thesis_project/utils/statusbar.dart';
 import 'package:thesis_project/view_models/vm_provider_profile.dart';
 import 'package:thesis_project/views/bookings/scr.bookings.dart';
+import 'package:thesis_project/views/screens/map/map_user_position.dart';
 
 class ProviderProfileScreen extends StatefulWidget {
   final ProviderDataset? providerDataset;
@@ -149,15 +152,36 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
                     ),
                     InkWell(
                       onTap: () async {
-                        await _profileViewModel
-                            .sendEmail("${widget.providerDataset!.name}@gmail.com");
+                        await _profileViewModel.sendEmail(
+                            "${widget.providerDataset!.name}@gmail.com");
                       },
                       child: Icon(
                         Icons.email,
                         color: Colors.blue,
                         size: 24,
                       ),
-                    )
+                    ),
+                    SizedBox(
+                      width: 14,
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return UserCurrentPostionScreen(
+                              currentLocationDetails: CurrentLocationDetails(
+                                  lat: widget.providerDataset!.lat,
+                                  long: widget.providerDataset!.long,
+                                  formattedAdress:
+                                      widget.providerDataset!.location));
+                        }));
+                      },
+                      child: Icon(
+                        Icons.location_pin,
+                        color: Colors.red,
+                        size: 24,
+                      ),
+                    ),
                   ],
                 )
               ],
@@ -313,8 +337,15 @@ class ProviderProfileScreenState extends State<ProviderProfileScreen> {
                           ),
                           // v: Hire Now
                           NeumorphicButton(
-                            onPressed: () {
-                              Navigator.push(context,
+                            onPressed: () async {
+                              AwesomeDialog(
+                                      context: context,
+                                      dialogType: DialogType.success,
+                                      title: "Successful")
+                                  .show();
+                              await Future.delayed(Duration(milliseconds: 1500));
+
+                              Navigator.pushReplacement(context,
                                   MaterialPageRoute(builder: (contex) {
                                 return BookingsScreen(
                                   booking: Booking(

@@ -25,7 +25,10 @@ class SetLocationScreen extends ConsumerStatefulWidget {
   final List<ProviderDataset> providerDatasetList;
   final String? provider;
   const SetLocationScreen(
-      {required this.providerDatasetList, required this.userName, this.provider, super.key});
+      {required this.providerDatasetList,
+      required this.userName,
+      this.provider,
+      super.key});
 
   @override
   _SetLocationScreenState createState() => _SetLocationScreenState();
@@ -55,7 +58,7 @@ class _SetLocationScreenState extends ConsumerState<SetLocationScreen> {
       resizeToAvoidBottomInset: false,
       backgroundColor: MyColors.caribbeanGreenTint7,
       body: Container(
-        padding: EdgeInsets.all(12),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 44),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -80,14 +83,14 @@ class _SetLocationScreenState extends ConsumerState<SetLocationScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             NeumorphicText(
-              "Please Set Your",
+              "Please Set Your ",
               style: NeumorphicStyle(
                   depth: 1,
                   // shadowDarkColor: MyColors.spaceCadetShadow1,
                   color: MyColors.spaceCadetTint2),
               textStyle: NeumorphicTextStyle(
                   fontFamily: fontOswald,
-                  fontSize: 46,
+                  fontSize: 32,
                   fontWeight: FontWeight.bold),
             ),
             NeumorphicText(
@@ -97,7 +100,7 @@ class _SetLocationScreenState extends ConsumerState<SetLocationScreen> {
                   // shadowDarkColor: MyColors.spaceCadetShadow1,
                   color: MyColors.spaceCadetTint2),
               textStyle: NeumorphicTextStyle(
-                  fontSize: 46,
+                  fontSize: 32,
                   fontFamily: fontOswald,
                   fontWeight: FontWeight.bold),
             )
@@ -137,6 +140,7 @@ class _SetLocationScreenState extends ConsumerState<SetLocationScreen> {
       child: Stack(children: [
         _bgImage(),
         _vSearchBar(searchFlag, placeResults),
+       
         _vBtns(),
         _vSearchResults(searchFlag, placeResults),
         /*  SizedBox(
@@ -463,7 +467,7 @@ class _SetLocationScreenState extends ConsumerState<SetLocationScreen> {
   void _mGotoHome(CurrentLocationDetails currentLocationDetails) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return HomeScreen(
-        provider: widget.provider,
+          provider: widget.provider,
           currentLocationDetails: currentLocationDetails,
           providerDatasetList: widget.providerDatasetList);
     }));

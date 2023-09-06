@@ -1141,15 +1141,17 @@ class _HomePageState extends ConsumerState<MapScreen> {
       child: InkWell(
         onTap: () async {
           logger.d("tapped Slide card ");
-          cardTapped = !cardTapped;
+          // cardTapped = !cardTapped;
+          cardTapped = cardTapped = true;
           if (cardTapped) {
+            logger.d(index);
             /* tappedPlaceDetail = await MapServices()
                 .getPlaceById(allFavoritePlaces[index]['place_id']); */
             // tappedProviderDetails = widget.providerDataSetList[index];
             tappedProviderDetails = widget.providerDataSetList[index];
-            setState(() {});
           }
-          moveCameraSlightly();
+          await moveCameraSlightly();
+          setState(() {});
         },
         child: Stack(
           children: [
@@ -1584,9 +1586,15 @@ class _HomePageState extends ConsumerState<MapScreen> {
       cardTapped = false;
       getDirections = true;
     });
-    var directions = await MapServices().getDirectionsByPlaceId(
+    /* var directions = await MapServices().getDirectionsByPlaceId(
         originPlaceId: "ChIJk0oxlITHrTARw11nLQBaR30",
-        destinationPlaceId: "ChIJVani2A24rTAREzuXbvDGc1g");
+        destinationPlaceId: "ChIJVani2A24rTAREzuXbvDGc1g"); */
+
+        
+
+    var directions = await MapServices().getDirections(
+        widget.currentLocationDetails.formattedAdress!,
+        tappedProviderDetails.location!);
     _markers = {};
     _polylines = {};
     logger.d(directions);
@@ -1598,6 +1606,8 @@ class _HomePageState extends ConsumerState<MapScreen> {
         directions['bounds_ne'],
         directions['bounds_sw']);
     _setPolyline(directions['polyline_decoded']);
+
+    setState(() {});
   }
 
   void _mInit() {
