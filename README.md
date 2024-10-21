@@ -1,7 +1,15 @@
 An e-commerce app, the implementation of Hybrid business model
 # ScreenShots
-<img src="https://i.postimg.cc/J0JhJLrs/Screenshot-2023-08-23-13-06-46-47-21c491ebcc59fd07f6c8f1fa45244167.jpg" alt="Screenshot" width="300" height="600">
-[![Screenshot-2023-08-23-13-07-34-94-21c491ebcc59fd07f6c8f1fa45244167.jpg](https://i.postimg.cc/Xq7bN6ZM/Screenshot-2023-08-23-13-07-34-94-21c491ebcc59fd07f6c8f1fa45244167.jpg)](https://postimg.cc/zbMMpMSp)
+<p align="center">
+<img src="https://i.postimg.cc/J0JhJLrs/Screenshot-2023-08-23-13-06-46-47-21c491ebcc59fd07f6c8f1fa45244167.jpg" alt="Screenshot" width="200" height="400">
+<img src="https://i.postimg.cc/Xq7bN6ZM/Screenshot-2023-08-23-13-07-34-94-21c491ebcc59fd07f6c8f1fa45244167.jpg" alt="Screenshot" width="200" height="400">
+</p>
+<!-- <p aling="center">
+<img src="https://i.postimg.cc/J0JhJLrs/Screenshot-2023-08-23-13-08-17-20-21c491ebcc59fd07f6c8f1fa45244167.jpg" alt="Screenshot" width="200" height="400">
+
+</p> -->
+
+
 [![Screenshot-2023-08-23-13-08-17-20-21c491ebcc59fd07f6c8f1fa45244167.jpg](https://i.postimg.cc/d1NWCbHc/Screenshot-2023-08-23-13-08-17-20-21c491ebcc59fd07f6c8f1fa45244167.jpg)](https://postimg.cc/k68F3pPT)
 [![Screenshot-2023-08-23-13-09-06-93-21c491ebcc59fd07f6c8f1fa45244167.jpg](https://i.postimg.cc/mkGS7TYq/Screenshot-2023-08-23-13-09-06-93-21c491ebcc59fd07f6c8f1fa45244167.jpg)](https://postimg.cc/Pp2ZjsFz)
 [![Screenshot-2023-08-23-13-09-40-77-21c491ebcc59fd07f6c8f1fa45244167.jpg](https://i.postimg.cc/7ZLn3szx/Screenshot-2023-08-23-13-09-40-77-21c491ebcc59fd07f6c8f1fa45244167.jpg)](https://postimg.cc/mt09RSVq)
